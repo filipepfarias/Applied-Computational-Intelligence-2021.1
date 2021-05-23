@@ -18,12 +18,19 @@ GDP_df_sg = CSV.File("./data/ddf--gapminder--systema_globalis/countries-etc-data
 
 Gini_df_sg = CSV.File("./data/ddf--gapminder--systema_globalis/countries-etc-datapoints/ddf--datapoints--inequality_index_gini--by--geo--time.csv") |> DataFrame;
 
-function GetBrazilData(df_var,column)
-    return df_var[df_var[!,:geo].=="bra","$column"]
+function GetBrazilData(df_var)
+    if any(names(df_var) .== "geo")
+        return select!(filter(row -> row.geo == "bra",df_var),Not(:geo))
+    elseif any(names(df_var) .== "country")
+        return select!(filter(row -> row.country == "bra",df_var),Not(:country))
+    else
+        error("DataFrame column does not match!")
+    end
 end
 
+HW1_df = outerjoin(([Income_df_sg,WorkingHours_df_sg,LiteracyRate_df_sg,EnergyProd_df_sg,WaterWithdraw_df_sg,LifeExpectancy_df_sg,CivilSocPart_df_sg,GDP_df_sg,Gini_df_sg] .|> GetBrazilData)...,on = :time)
 
-BRA_Gini = Gini_df_sg[Gini_df_sg[!,:geo].=="bra",:inequality_index_gini]
-BRA_Year = Gini_df_sg[Gini_df_sg[!,:geo].=="bra",:time]
+# BRA_Gini = Gini_df_sg[Gini_df_sg[!,:geo].=="bra",:inequality_index_gini]
+# BRA_Year = Gini_df_sg[Gini_df_sg[!,:geo].=="bra",:time]
 
-scatter(BRA_Year,BRA_Gini)
+# scatter(BRA_Year,BRA_Gini)Lite
