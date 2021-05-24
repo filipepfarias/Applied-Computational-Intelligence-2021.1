@@ -1,4 +1,4 @@
-using DataFrames, CSV, Plots
+using DataFrames, CSV, Plots, StatsPlots
 
 Income_df_sg = CSV.File("./data/ddf--gapminder--systema_globalis/countries-etc-datapoints/ddf--datapoints--income_per_person_gdppercapita_ppp_inflation_adjusted--by--geo--time.csv") |> DataFrame;
 
@@ -28,7 +28,7 @@ function GetBrazilData(df_var)
     end
 end
 
-HW1_df = outerjoin(([Income_df_sg,WorkingHours_df_sg,LiteracyRate_df_sg,EnergyProd_df_sg,WaterWithdraw_df_sg,LifeExpectancy_df_sg,CivilSocPart_df_sg,GDP_df_sg,Gini_df_sg] .|> GetBrazilData)...,on = :time)
+HW1_df = outerjoin(([Income_df_sg,WorkingHours_df_sg,LiteracyRate_df_sg,EnergyProd_df_sg,WaterWithdraw_df_sg,LifeExpectancy_df_sg,CivilSocPart_df_sg,GDP_df_sg,Gini_df_sg] .|> GetBrazilData)...,on = :time);
 
 # BRA_Gini = Gini_df_sg[Gini_df_sg[!,:geo].=="bra",:inequality_index_gini]
 # BRA_Year = Gini_df_sg[Gini_df_sg[!,:geo].=="bra",:time]
