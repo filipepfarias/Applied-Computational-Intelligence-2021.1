@@ -3,3 +3,4 @@ hw1/report/*.synctex.gz
 hw1/report/*.log
 hw1/report/*.aux
 *.pdf
+.ipynb_checkpoints
