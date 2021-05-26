@@ -22,4 +22,4 @@ end
 
 f = plot(plot_matrix[:]..., layout=(9,9), size=(3000,3000),axis=false,ticks=false,legend=false)
 
-savefig(f,"../figure/matrix-corplot.pdf");
+savefig(f,"./hw1/figures/matrix-corplot.pdf");
