@@ -1,11 +1,25 @@
 using DataFrames, CSV, Plots, StatsBase, Statistics
 
-air_quality_df = dropmissing(CSV.File("./data/AirQualityUCI.csv", delim=";", missingstring="-200") |> DataFrame)
+concrete_df = dropmissing(CSV.File("./data/Concrete_Data.csv") |> DataFrame)
 
-predictor_names = Array(["CO_GT", "PT08_S1_CO", "NMHC_GT", "C6H6_GT", "PT08_S2_NMHC", "NOx_GT", "PT08_S3_NOx", "NO2_GT", "PT08_S4_NO2", "PT08_S5_O3", "RH", "AH"])
+concrete_matrix = Matrix{Real}(concrete_df[:,:])
+predictors_corr_matrix = cor(concrete_matrix, concrete_matrix)
 
-air_quality_matrix = Matrix{Real}(air_quality_df[:, predictor_names])
+labels = Array(names(concrete_df[:,:]))
+Plots.heatmap(labels, labels, predictors_corr_matrix, xrotation = 45)
 
-predictors_corr_matrix = cor(air_quality_matrix, air_quality_matrix)
+plot_matrix = Matrix{}(undef,9,9);
 
-Plots.heatmap(predictor_names, predictor_names, predictors_corr_matrix, size=(1500,1000))
+for i in 1:9
+    for j in 1:9
+        if i == j
+            plot_matrix[i,j] = histogram(concrete_df[:,i])
+        else
+            plot_matrix[i,j] = scatter(concrete_df[:,i],concrete_df[:,j])
+        end
+    end    
+end
+
+f = plot(plot_matrix[:]..., layout=(9,9), size=(3000,3000),axis=false,ticks=false,legend=false)
+
+savefig(f,"../figure/matrix-corplot.pdf");
