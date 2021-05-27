@@ -1,5 +1,5 @@
-name = "HWFunctions"
-uuid = "cf76accc-81cd-4ffa-9adf-2acdb1d2e436"
+name = "AppCompIntel"
+uuid = "8ebbb54d-fea7-4a9a-9766-26ed341b9e33"
 authors = ["Filipe Farias <filipepfarias@fisica.ufc.br>"]
 version = "0.1.0"
 
@@ -9,5 +9,7 @@ DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 Latexify = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
