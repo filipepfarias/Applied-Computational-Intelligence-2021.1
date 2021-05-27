@@ -1,12 +1,13 @@
-using hw1
+using HWFunctions
 using DataFrames
 using CSV
 using Plots
 using StatsBase
 using Statistics
 using LaTeXStrings
+using Latexify
 
-concrete_df = dropmissing(CSV.File("../../data/ConcreteUCI.csv") |> DataFrame)
+concrete_df = dropmissing(CSV.File("../data/ConcreteUCI.csv") |> DataFrame)
 strength_categories = Array(["very low", "low", "medium", "high", "very high"])
 predictor_names = Array(["Cement", "Blast Furnace Slag", "Fly Ash", "Water", "Superplasticizer", "Coarse Aggregate", "Fine Aggregate", "Age (day)"])
 concrete_matrix = Matrix{Real}(concrete_df[:,predictor_names]);
@@ -15,8 +16,8 @@ num_predictors = length(predictor_names)
 num_categories = length(strength_categories)
 num_observations = nrow(concrete_df)
 
-latexify("D = %$num_predictors") |> display
-latexify("L = %$num_categories") |> display
+latexify(L"D = %$num_predictors") |> display
+latexify(L"L = %$num_categories") |> display
 
 for i in 1:num_categories
     n = nrow(subset(concrete_df, :Category => ByRow(==(i))))
@@ -33,8 +34,8 @@ print(predictors_statistics_df)
 
 predictors_corr_matrix = cor(concrete_matrix, concrete_matrix)
 pyplot()
-f1 = heatmap(predictor_names, predictor_names, predictors_corr_matrix,xtickfontrotation=20,framestyle=:box,clim=(-1,1),color=:balance,aspect_ratio=:equal,size=(800,720))
-savefig(f1,"../figures/predictors_corr_matrix.pdf");
+f1 = heatmap(predictor_names, predictor_names, predictors_corr_matrix,xtickfontrotation=20,framestyle=:box,clim=(-1,1),color=:balance,aspect_ratio=:equal)
+savefig(f1,"../hw1/figures/predictors_corr_matrix.pdf");
 
 plot_matrix = Matrix{}(undef,num_predictors,num_predictors);
 
@@ -48,6 +49,6 @@ for i in 1:num_predictors
     end    
 end
 
-f2 = plot(plot_matrix[:]..., layout=(num_predictors,num_predictors), size=(3000,3000), axis=false, ticks=false, legend=false)
+f2 = plot(plot_matrix[:]..., layout=(num_predictors,num_predictors), axis=false, ticks=false, legend=false)
 
-savefig(f2,"../figures/matrix-corplot.pdf");
+savefig(f2,"../hw1/figures/matrix-corplot.pdf");

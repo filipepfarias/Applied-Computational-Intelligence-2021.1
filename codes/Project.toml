@@ -1,0 +1,4 @@
+name = "HWFunctions"
+uuid = "cf76accc-81cd-4ffa-9adf-2acdb1d2e436"
+authors = ["Filipe Farias <filipepfarias@fisica.ufc.br>"]
+version = "0.1.0"
