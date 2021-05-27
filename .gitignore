@@ -1,6 +1,9 @@
 .DS_Store
-hw1/report/*.synctex.gz
-hw1/report/*.log
-hw1/report/*.aux
+*.synctex.gz
+*.log
+*.aux
+*.fdb_latexmk
+*.fls
 *.pdf
+settings.json
 .ipynb_checkpoints
