@@ -1,4 +1,10 @@
-using DataFrames, CSV, Plots, StatsBase, Statistics, Formatting, LaTeXStrings
+using hw1
+using DataFrames
+using CSV
+using Plots
+using StatsBase
+using Statistics
+using LaTeXStrings
 
 concrete_df = dropmissing(CSV.File("../../data/ConcreteUCI.csv") |> DataFrame)
 strength_categories = Array(["very low", "low", "medium", "high", "very high"])
