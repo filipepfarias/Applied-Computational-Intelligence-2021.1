@@ -17,18 +17,9 @@ concrete_matrix = Matrix{Real}(concrete_df[:,predictor_names]);
 
 display(concrete_df);
 
-num_predictors = length(predictor_names)
-num_categories = length(strength_categories)
-num_observations = nrow(concrete_df)
-
-# latexify(L"N = %$num_observations") |> display
-# latexify(L"D = %$num_predictors") |> display
-# latexify(L"L = %$num_categories") |> display
-
-for i in 1:num_categories
-    n = nrow(subset(concrete_df, :Category => ByRow(==(i))))
-    latexify(L"N_{L_{%$i}} = %$n") |> display
-end
+num_predictors   = length(predictor_names);
+num_categories   = length(strength_categories);
+num_observations = nrow(concrete_df);
 
 predictors_statistics_df = DataFrame()
 
@@ -39,16 +30,18 @@ end
 print(predictors_statistics_df)
 
 predictors_corr_matrix = cor(concrete_matrix, concrete_matrix)
+
 pyplot()
-f1 = heatmap(predictor_names, predictor_names, predictors_corr_matrix,xtickfontrotation=20,framestyle=:box,clim=(-1,1),color=:balance,aspect_ratio=:equal)
-savefig(f1,eval(@__DIR__)*"/"*"../hw1/figures/predictors_corr_matrix.pdf");
+
+f = heatmap(predictor_names, predictor_names, predictors_corr_matrix,xtickfontrotation=20,framestyle=:box,clim=(-1,1),color=:balance,aspect_ratio=:equal);
+save_if_isfile(f,"predictors_corr_matrix.pdf");
 
 for category in 0:num_categories
     f = plot_monovariate_histograms(concrete_df, predictor_names, category)
-    savefig(f,eval(@__DIR__)*"/"*"../hw1/figures/monovariate_histograms_$category.pdf")
+    save_if_isfile(f,"monovariate_histograms_$category.pdf");
 end
 
 for category in 0:num_categories
     f = plot_bivariate_scatters(concrete_df, predictor_names, category)
-    savefig(f,eval(@__DIR__)*"/"*"../hw1/figures/bivariate_scatters_$category.pdf")
+    save_if_isfile(f,"bivariate_scatters_$category.pdf");
 end

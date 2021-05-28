@@ -1,3 +1,13 @@
+function figure_path(figure_name)
+    return eval(@__DIR__)*"/../../hw1/figures/"*figure_name
+end
+
+function save_if_isfile(f,path)
+    if ~isfile(figure_path(path))
+        savefig(f,figure_path(path))
+    end    
+end
+
 function plot_monovariate_histograms(df, predictor_names, category = 0)
     num_predictors = length(predictor_names)
     plots = Array{Any}(undef, num_predictors)
@@ -40,6 +50,3 @@ function plot_bivariate_scatters(df, predictor_names, category = 0)
         return plot(plot_matrix[:]..., layout=(num_predictors, num_predictors),size=(1500,1500), axis=false, ticks=false, legend=false)
     end
 end
-
-export plot_monovariate_histograms
-export plot_bivariate_scatters

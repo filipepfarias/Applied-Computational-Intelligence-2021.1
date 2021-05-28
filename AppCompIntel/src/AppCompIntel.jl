@@ -6,7 +6,10 @@ module AppCompIntel
 
     export
         #Utils - Plots
-        plot_monovariate_histograms, plot_scatters, plot_bivariate_scatters
+        plot_monovariate_histograms, 
+        plot_bivariate_scatters,
+        figure_path,
+        save_if_isfile
 
     include("utils.jl")
 
