@@ -1,3 +1,29 @@
+function get_category(strength)
+    if strength < 25 # Non-standard -> https://www.baseconcrete.co.uk/different-types-of-concrete-grades-and-their-uses/
+        return 1
+    elseif 25 <= strength < 50 # Standard
+        return 2
+    elseif  50 <= strength # High Strength
+        return 3
+    end
+end
+
+function boxcox_transform(x,λ)
+    if λ == 0
+        return log(x)
+    else
+        return (x^λ - 1)/λ
+    end
+end
+
+function yeojohnson_transform(x,λ,sign_data = 1)
+    if λ == 0
+        return sign_data*log(sign_data*x+1)
+    else
+        return (sign_data*(x+1)^λ - 1)/λ
+    end 
+end
+
 function figure_path(figure_name)
     return eval(@__DIR__)*"/../../hw1/figures/"*figure_name
 end
@@ -30,7 +56,8 @@ function plot_scatters(df, predictor_names)
     for i in 1:num_predictors
         for j in 1:num_predictors
             if i == j
-                plot_matrix[i,j] = plot(df[:,i], t = [:histogram, :density], normed=true)
+                # plot_matrix[i,j] = plot(df[:,i], t = [:histogram, :density], normed=true)
+                plot_matrix[i,j] = plot(df[:,i], t = [:histogram], normed=true)
             else
                 plot_matrix[i,j] = scatter(df[:,i], df[:,j])
             end

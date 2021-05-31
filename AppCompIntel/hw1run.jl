@@ -1,3 +1,4 @@
+using Revise
 using AppCompIntel 
 using CSV
 using DataFrames
@@ -6,10 +7,16 @@ using Statistics, StatsBase
 using Plots
 using Latexify, LaTeXStrings
 
-println("\nRunning HW1 ...\n");
+println("Running HW1 ...\n");
 println("Loading Concrete dataset...\n");
 
-concrete_df = CSV.File(eval(@__DIR__)*"/"*"../data/ConcreteUCI.csv") |> DataFrame;
+concrete_df = CSV.File(eval(@__DIR__)*"/../data/Concrete_Data.csv") |> DataFrame;
+
+transform!(concrete_df, "Concrete compressive strength (MPa)" => ByRow(strength -> get_category(strength)) => "Category")
+
+open(eval(@__DIR__)*"/../data/ConcreteUCI.csv", "w") do file
+    CSV.write(file, concrete_df)
+end
 
 strength_categories = Array(["very low", "low", "medium", "high", "very high"]);
 predictor_names = Array(["Cement", "Blast Furnace Slag", "Fly Ash", "Water", "Superplasticizer", "Coarse Aggregate", "Fine Aggregate", "Age (day)"]);
@@ -31,17 +38,18 @@ print(predictors_statistics_df)
 
 predictors_corr_matrix = cor(concrete_matrix, concrete_matrix)
 
-pyplot()
+# pyplot()
 
-f = heatmap(predictor_names, predictor_names, predictors_corr_matrix,xtickfontrotation=20,framestyle=:box,clim=(-1,1),color=:balance,aspect_ratio=:equal);
-save_if_isfile(f,"predictors_corr_matrix.pdf");
+# f = heatmap(predictor_names, predictor_names, predictors_corr_matrix,xtickfontrotation=20,framestyle=:box,clim=(-1,1),color=:balance,aspect_ratio=:equal);
+# save_if_isfile(f,"predictors_corr_matrix.pdf");
 
-for category in 0:num_categories
-    f = plot_monovariate_histograms(concrete_df, predictor_names, category)
-    save_if_isfile(f,"monovariate_histograms_$category.pdf");
-end
+# gr()
+# for category in 0:num_categories
+#     f = plot_monovariate_histograms(concrete_df, predictor_names, category)
+#     save_if_isfile(f,"monovariate_histograms_$category.pdf");
+# end
 
-for category in 0:num_categories
-    f = plot_bivariate_scatters(concrete_df, predictor_names, category)
-    save_if_isfile(f,"bivariate_scatters_$category.pdf");
-end
+# for category in 0:num_categories
+#     f = plot_bivariate_scatters(concrete_df, predictor_names, category)
+#     save_if_isfile(f,"bivariate_scatters_$category.pdf");
+# end

@@ -9,7 +9,8 @@ module AppCompIntel
         plot_monovariate_histograms, 
         plot_bivariate_scatters,
         figure_path,
-        save_if_isfile
+        save_if_isfile,
+        get_category
 
     include("utils.jl")
 
