@@ -10,7 +10,9 @@ module AppCompIntel
         plot_bivariate_scatters,
         figure_path,
         save_if_isfile,
-        get_category
+        get_category,
+        boxcox_transform,
+        yeojohnson_transform
 
     include("utils.jl")
 

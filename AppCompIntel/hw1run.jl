@@ -18,8 +18,8 @@ open(eval(@__DIR__)*"/../data/ConcreteUCI.csv", "w") do file
     CSV.write(file, concrete_df)
 end
 
-strength_categories = Array(["very low", "low", "medium", "high", "very high"]);
-predictor_names = Array(["Cement", "Blast Furnace Slag", "Fly Ash", "Water", "Superplasticizer", "Coarse Aggregate", "Fine Aggregate", "Age (day)"]);
+strength_categories = Array(["Non-standard", "Standard", "High strength"]);
+predictor_names = names(concrete_df)[1:end-2];
 concrete_matrix = Matrix{Real}(concrete_df[:,predictor_names]);
 
 display(concrete_df);
