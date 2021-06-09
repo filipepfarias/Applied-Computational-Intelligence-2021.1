@@ -5,16 +5,17 @@
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
 \usepackage{graphicx}
+\usepackage{booktabs}
 \usepackage{textcomp}
 \usepackage{xcolor}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Conference Paper Title*\\
-{\footnotesize \textsuperscript{*}Note: Sub-titles are not captured in Xplore and
-should not be used}
-\thanks{Identify applicable funding agency here. If none, delete this.}
+\title{Composition of concrete and its influence on compressive strength\\
+%{\footnotesize \textsuperscript{*}Note: Sub-titles are not captured in Xplore and
+%should not be used}
+%\thanks{Identify applicable funding agency here. If none, delete this.}
 }
 
 \author{\IEEEauthorblockN{Filipe P. de Farias}
@@ -33,20 +34,32 @@ email address or ORCID}
 \maketitle
 
 \begin{abstract}
-This document is a model and instructions for \LaTeX.
-This and the IEEEtran.cls file define the components of your paper [title, text, heads, etc.]. *CRITICAL: Do Not Use Symbols, Special Characters, Footnotes, 
-or Math in Paper Title or Abstract.
+The compressive strength of concrete impacts directly on its application. This is, the difference between the concrete for columns or beams and the concrete for pavements is mainly due the compressive strength it is able to resist. Columns and beams must resist to compression more than pavements. In this work, a pre-processing is done in the database of different composition concrete collected by UCI Machine Learning Repository (University of California, Irvine).
 \end{abstract}
 
 \begin{IEEEkeywords}
-component, formatting, style, styling, insert
+concrete, compresive, strength, machine, learning, pre-processing
 \end{IEEEkeywords}
 
 \section{Introduction}
-This document is a model and instructions for \LaTeX.
-Please observe the conference page limits. 
+The applications of the concrete depends directly on its compressive strength. This works tries to predict this compressive strength and to classify when the concrete is proper to be applied in structures. For instance the concrete for columns or beams needs to have more compressive strength than the one for pavement, in general. In the UCI database the concrete is tested with different components concentrations and different curing time (ages). 
 
-\section{Ease of Use}
+\section{Data description}
+
+The composition of each of the $N$ concrete samples is given by the concentrations (kg/m\textsuperscript{3}) of $D$ components: Cement, Blast Furnace Slag, Fly Ash, Water, Superplasticizer, Coarse Aggregate and Fine Aggregate. Each sample has its Age (day) and the measured Concrete compressive strength (MPa).
+
+\begin{table}[htp]
+\caption{Data Description}
+\begin{center}  \begin{tabular}{@{} clc @{}}    \toprule    Component & Description & Unit \\     \midrule    $D_1$ & Cement & kg/m\textsuperscript{3} \\     $D_2$ & Blast Furnace Slag & kg/m\textsuperscript{3} \\     $D_3$ & Fly Ash & kg/m\textsuperscript{3} \\     $D_4$ & Water & kg/m\textsuperscript{3} \\     $D_5$ & Superplasticizer & kg/m\textsuperscript{3} \\     $D_6$ & Coarse Aggregate & kg/m\textsuperscript{3} \\     $D_7$ & Fine Aggregate & kg/m\textsuperscript{3} \\     $D_8$ & Age & days \\ 
+	\midrule    N & 1030 samples&  \\     \bottomrule  \end{tabular}\end{center}
+\label{Data Description}
+\end{table}%
+
+\textcolor{red}{The concrete was stratified into $L=3$ classes.} This is, the concrete which is weak and not recommended for structures $L_1$, the \emph{Non-standard}. The concrete whose strength is in a range that can be applied to structures is classified as $L_2$, or \emph{Standard}. And the high performance concrete $L_3$, \emph{High-standard}.
+
+The observations $Y$ are the measured compressive strengths of each sample and, as the predictors $D_1 - D_7$, are continuous. The Age ($D_8$) of the concrete is extremely discrete.
+
+\section{Unconditional Mono-variate Analysis}
 
 \subsection{Maintaining the Integrity of the Specifications}
 
