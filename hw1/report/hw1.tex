@@ -24,11 +24,11 @@
 Fortaleza, Brazil \\
 filipepfarias@fisica.ufc.br}
 \and
-\IEEEauthorblockN{2\textsuperscript{nd} Given Name Surname}
+\IEEEauthorblockN{Yvo J. M. Sales}
 \IEEEauthorblockA{\textit{Teleinformatics Engineering Department} \\
 \textit{Federal University of Ceará}\\
 Fortaleza, Brazil \\
-email address or ORCID}
+yvojms@gmail.com}
 }
 
 \maketitle
@@ -50,8 +50,24 @@ The composition of each of the $N$ concrete samples is given by the concentratio
 
 \begin{table}[htp]
 \caption{Data Description}
-\begin{center}  \begin{tabular}{@{} clc @{}}    \toprule    Component & Description & Unit \\     \midrule    $D_1$ & Cement & kg/m\textsuperscript{3} \\     $D_2$ & Blast Furnace Slag & kg/m\textsuperscript{3} \\     $D_3$ & Fly Ash & kg/m\textsuperscript{3} \\     $D_4$ & Water & kg/m\textsuperscript{3} \\     $D_5$ & Superplasticizer & kg/m\textsuperscript{3} \\     $D_6$ & Coarse Aggregate & kg/m\textsuperscript{3} \\     $D_7$ & Fine Aggregate & kg/m\textsuperscript{3} \\     $D_8$ & Age & days \\ 
-	\midrule    N & 1030 samples&  \\     \bottomrule  \end{tabular}\end{center}
+\begin{center}
+  \begin{tabular}{@{} clc @{}}
+    \toprule
+    Component & Description & Unit \\ 
+    \midrule
+    $D_1$ & Cement & kg/m\textsuperscript{3} \\ 
+    $D_2$ & Blast Furnace Slag & kg/m\textsuperscript{3} \\ 
+    $D_3$ & Fly Ash & kg/m\textsuperscript{3} \\ 
+    $D_4$ & Water & kg/m\textsuperscript{3} \\ 
+    $D_5$ & Superplasticizer & kg/m\textsuperscript{3} \\ 
+    $D_6$ & Coarse Aggregate & kg/m\textsuperscript{3} \\ 
+    $D_7$ & Fine Aggregate & kg/m\textsuperscript{3} \\ 
+    $D_8$ & Age & days \\ 
+	\midrule
+    N & 1030 samples&  \\ 
+    \bottomrule
+  \end{tabular}
+\end{center}
 \label{Data Description}
 \end{table}%
 
@@ -59,17 +75,46 @@ The composition of each of the $N$ concrete samples is given by the concentratio
 
 The observations $Y$ are the measured compressive strengths of each sample and, as the predictors $D_1 - D_7$, are continuous. The Age ($D_8$) of the concrete is extremely discrete.
 
-\section{Unconditional Mono-variate Analysis}
+\section{Data Analysis}
 
-\subsection{Maintaining the Integrity of the Specifications}
+In order to do future works, an analysis of the data is needed to understand them and perform their validation.
 
-The IEEEtran class file is used to format your paper and style the text. All margins, 
-column widths, line spaces, and text fonts are prescribed; please do not 
-alter them. You may note peculiarities. For example, the head margin
-measures proportionately more than is customary. This measurement 
-and others are deliberate, using specifications that anticipate your paper 
-as one part of the entire proceedings, and not as an independent document. 
-Please do not revise any of the current designations.
+\subsection{Unconditional Mono-variate Analysis}
+
+The statistics of each predictor is obtained performing a mono-variate analysis. At this step is possible to verify how the data is distributed.
+
+\begin{table}[htp]
+\caption{Data Statistics Summary}
+  \centering
+  \begin{tabular}{@{} crrr @{}}
+    \toprule
+     & Mean & STD & Skewness \\ 
+    \midrule
+    $D_1$ & 281.16 & 104.506 & 0.50873 \\ 
+    $D_2$ & 73.89 & 86.279 & 0.79955 \\ 
+    $D_3$ & 54.18 & 63.997 & 0.53657 \\ 
+    $D_4$ & 181.56 & 21.354 & 0.07451 \\ 
+    $D_5$ & 6.20 & 5.973 & 0.90588 \\ 
+    $D_6$ & 972.91 & 77.754 & 0.04016 \\ 
+    $D_7$ & 773.58 & 80.176 & 0.25264 \\ 
+    $D_8$ & 45.66 & 63.169 & 3.26441 \\       
+    \bottomrule
+  \end{tabular}
+\label{Data Statistics Summary}
+\end{table}%
+
+In Table~\ref{Data Statistics Summary} it is possible to see that the data are not \emph{highly skewed}, but yet are needed to be normalised to zero mean and standard unitary variation. This can be easier shown in Figure~\ref{}.
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=\columnwidth]{../figures/monovariate_histograms_0}}
+\caption{Example of a figure caption.}
+\label{fig}
+\end{figure}
+
+An interesting fact is that the components that, in general are not absent in the concrete composition has the lower skewness. These components are beyond Cement and Water, Coarse and Fine Aggregates. The other components have higher skewness due to the fact they are optional in concrete mixture, thus they allow to have zero values in some samples. Another seeable fact is the discreteness of the Age values. In general the concrete achieves the \emph{cure} at the end of 28 days. this explains the size of the bins between 0 and 100. The other cure periods are sampled in dataset to test its influence in compressive strenght.
+
+\subsection{Class-conditional mono-variate analysis }
+
 
 \section{Prepare Your Paper Before Styling}
 Before you begin to format your paper, first write and save the content as a 
