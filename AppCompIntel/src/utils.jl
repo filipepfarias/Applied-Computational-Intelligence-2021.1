@@ -34,17 +34,25 @@ function save_if_isfile(f,path)
     end    
 end
 
-function plot_monovariate_histograms(df, predictor_names, category = 0)
+function plot_monovariate_histograms(df, predictor_names, category = 0, trans = false)
     num_predictors = length(predictor_names)
     plots = Array{Any}(undef, num_predictors)
     if category == 0
         for i in 1:num_predictors
-            plots[i] = plot(df[:,i], t = [:histogram, :density], title=predictor_names[i], normed=true)
+            if trans
+                plots[i] = plot(YeoJohnsonTrans.transform(df[:,i]), t = [:histogram], title=predictor_names[i], normed=true)
+            else
+                plots[i] = plot(df[:,i], t = [:histogram], title=predictor_names[i], normed=true)
+            end
         end
     else
-        classconditioned_df = subset(df, :Category => ByRow(==(category)))
+        class_df = subset(df, :Category => ByRow(==(category)))
         for i in 1:num_predictors
-            plots[i] = plot(classconditioned_df[:,i], t = [:histogram, :density], title=predictor_names[i], normed=true)
+            if trans
+                plots[i] = plot(YeoJohnsonTrans.transform(class_df[:,i]), t = [:histogram], title=predictor_names[i], normed=true)
+            else
+                plots[i] = plot(class_df[:,i], t = [:histogram], title=predictor_names[i], normed=true)
+            end
         end
     end
     return plot(plots[:]..., layout = grid(2, Int(num_predictors / 2)), size = (1000, 1000), legend=false)

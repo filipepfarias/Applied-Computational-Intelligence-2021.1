@@ -3,7 +3,8 @@ module AppCompIntel
     using Plots
     using StatsPlots
     using DataFrames
-
+    using YeoJohnsonTrans
+    
     export
         #Utils - Plots
         plot_monovariate_histograms, 
