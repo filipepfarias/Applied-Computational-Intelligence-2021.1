@@ -6,14 +6,9 @@ module AppCompIntel
 
     export
         #Utils - Plots
-        plot_monovariate_histograms, 
-        plot_bivariate_scatters,
         figure_path,
-        save_if_isfile,
-        get_category,
-        boxcox_transform,
-        yeojohnson_transform
+        get_category
 
-    include("utils.jl")
+    include("utils.jl");
 
 end # module
