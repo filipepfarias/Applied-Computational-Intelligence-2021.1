@@ -44,24 +44,36 @@ scatter!(standard[1,:], standard[2,:], marker=:circle, linewidth=0, label="stand
 scatter!(high_strength[1,:], high_strength[2,:], marker=:circle, linewidth=0, label="high strength")
 plot!(pca_scatter_plot, xlabel="First principal component", ylabel="Second principal component", legendtitle="Concrete category", legend=:outertop, legendnrows=1)
 
-#save_if_isfile(pca_scatter_plot, "pca_scatter_plot.pdf")
+save_if_isfile(pca_scatter_plot, "pca_scatter_plot.pdf")
+save_if_isfile(plot(principalvars(concrete_pca), xlabel="Principal components", ylabel="Variance", legend = false), "pca_variance.pdf");
 
-#save_if_isfile(plot(principalvars(concrete_pca), xlabel="Principal components", ylabel="Variance", legend = false), "pca_variance.pdf");
-# display(concrete_df);
 
-#num_predictors   = length(predictor_names);
-#num_categories   = length(strength_categories);
-#num_observations = nrow(concrete_df);
+num_predictors   = length(predictor_names);
+num_categories   = length(strength_categories);
+num_observations = nrow(concrete_df);
 
-# predictors_statistics_df = DataFrame()
+predictors_statistics_df = DataFrame()
+predictors_statistics_notstandard_df = DataFrame()
+predictors_statistics_standard_df = DataFrame()
+predictors_statistics_highstrength_df = DataFrame()
 
-# for predictor_name in predictor_names
-#     predictor_array = Array(concrete_df[:, predictor_name])
-#     append!(predictors_statistics_df, DataFrame(mean = mean(predictor_array), std = std(predictor_array), gamma = skewness(predictor_array)))
-# end
-# print(predictors_statistics_df)
+for predictor_name in predictor_names
+    predictor_array = Array(concrete_df[:, predictor_name])
+    predictor_array_notstandard = Array(concrete_df[concrete_df[:, "Category"] .== 1, predictor_name])
+    predictor_array_standard = Array(concrete_df[concrete_df[:, "Category"] .== 2, predictor_name])
+    predictor_array_highstrength = Array(concrete_df[concrete_df[:, "Category"] .== 3, predictor_name])
+    append!(predictors_statistics_df, DataFrame(mean = mean(predictor_array), std = std(predictor_array), gamma = skewness(predictor_array)))
+    append!(predictors_statistics_notstandard_df, DataFrame(mean = mean(predictor_array_notstandard), std = std(predictor_array_notstandard), gamma = skewness(predictor_array_notstandard)))
+    append!(predictors_statistics_standard_df, DataFrame(mean = mean(predictor_array_standard), std = std(predictor_array_standard), gamma = skewness(predictor_array_standard)))
+    append!(predictors_statistics_highstrength_df, DataFrame(mean = mean(predictor_array_highstrength), std = std(predictor_array_highstrength), gamma = skewness(predictor_array_highstrength)))
+end
 
-# predictors_corr_matrix = cor(concrete_matrix, concrete_matrix)
+print(predictors_statistics_df)
+print(predictors_statistics_notstandard_df)
+print(predictors_statistics_standard_df)
+print(predictors_statistics_highstrength_df)
+
+#predictors_corr_matrix = cor(concrete_matrix, concrete_matrix)
 
 # pyplot()
 
