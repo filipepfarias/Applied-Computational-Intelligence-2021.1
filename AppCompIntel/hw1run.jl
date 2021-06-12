@@ -71,10 +71,10 @@ predictors_corr_matrix = cor(concrete_matrix, concrete_matrix)
 
 pyplot()
 f = heatmap(predictor_names, predictor_names, predictors_corr_matrix, 
-    xtickfontrotation=20,framestyle=:box,clim=(-1,1),color=:balance,aspect_ratio=:equal);
+    xrotation=20,framestyle=:box,clim=(-1,1),color=:balance,aspect_ratio=:equal);
 !save_for_report ? display(f) : savefig(f,figure_path("predictors_corr_matrix.pdf"));
 
-pyplot()
+gr()
 println("Plotting monovariate histograms")
 f1 = @df concrete_df plot(cols(1:num_predictors), layout=grid(2,4), t = :histogram, bins = 8, 
     title = ["$i" for j in 1:1, i in predictor_names[:]], 
@@ -99,7 +99,7 @@ for i in 1:size(f3)[1]
         if i == j
             f3[i,i] = histogram(concrete_df[:,i], axis=false, ticks=false, legend=false, bins=10)
         else
-            f3[i,j] = scatter(concrete_df[:,i],concrete_df[:,j],axis=false, ticks=false, legend=false; markerstrokewidth=.35, markersize=2)
+            f3[i,j] = scatter(concrete_df[:,i],concrete_df[:,j],axis=false, ticks=false, legend=false; markerstrokewidth=.25, markersize=2)
         end
         
         j == 1 ? plot!(f3[I[i,j]], xguide=L"D_{%$i}",xmirror = true, xguideposition= :top) : plot!(f3[I[i,j]], top_margin=-2Plots.mm)
