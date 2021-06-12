@@ -111,17 +111,27 @@ f3 = plot(f3...,layout = grid(8,8), dpi=170, size=(700,700));
 !save_for_report ? display(f3) : savefig(f3,figure_path("bivariate_histograms_allclass.pdf"));
 
 println("Executing PCA");
-concrete_pca              = MultivariateStats.fit(MultivariateStats.PCA, concrete_matrix', pratio=1);
+concrete_pca              = MultivariateStats.fit(MultivariateStats.PCA, concrete_matrix', maxoutdim=2);
+concrete_pca_projection_matrix = MultivariateStats.projection(concrete_pca)
 concrete_projected_matrix = MultivariateStats.transform(concrete_pca, concrete_matrix');
 
 not_standard  = concrete_projected_matrix[:, concrete_df[:, "Category"] .== 1]
 standard      = concrete_projected_matrix[:, concrete_df[:, "Category"] .== 2]
 high_strength = concrete_projected_matrix[:, concrete_df[:, "Category"] .== 3]
 
-f4 = scatter(not_standard[1,:], not_standard[2,:], marker=:circle,linewidth=0, label="not standard")
-f4 = scatter!(standard[1,:], standard[2,:], marker=:circle, linewidth=0, label="standard")
-f4 = scatter!(high_strength[1,:], high_strength[2,:], marker=:circle, linewidth=0, label="high strength")
+#pgfplotsx()
+
+f4 = scatter(not_standard[1,:], not_standard[2,:], marker=:circle,linewidth=0, label="not standard", markerstrokealpha = 0)
+f4 = scatter!(standard[1,:], standard[2,:], marker=:circle, linewidth=0, label="standard", markerstrokealpha = 0)
+f4 = scatter!(high_strength[1,:], high_strength[2,:], marker=:circle, linewidth=0, label="high strength", markerstrokealpha = 0)
 f4 = plot!(f4, xlabel="First principal component", ylabel="Second principal component", legendtitle="Concrete category", legend=:outertop, legendnrows=1);
+
+for i in 1:num_predictors
+    x = concrete_pca_projection_matrix[i,1]
+    y = concrete_pca_projection_matrix[i,2]
+    f4 = plot!(f4, [0, x],[0, y],arrow=true,color=:black,linewidth=1,label="")
+    annotate!(x * 1.15, y * 1.15, text(i, :black, 5), :black)
+end
 
 !save_for_report ? display(f4) : savefig(f4,figure_path("pca_scatter_plot.pdf"));
 
