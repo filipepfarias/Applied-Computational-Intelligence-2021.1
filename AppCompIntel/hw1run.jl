@@ -24,6 +24,9 @@ concrete_matrix = (concrete_matrix .- mean(concrete_matrix, dims=1)) ./ std(conc
 num_predictors   = length(predictor_names);
 num_categories   = length(strength_categories);
 num_observations = nrow(concrete_df);
+num_observations_l1 = sum(concrete_df[:,end] .== 1)
+num_observations_l2 = sum(concrete_df[:,end] .== 2)
+num_observations_l3 = sum(concrete_df[:,end] .== 3)
 
 println("Evaluating predictors statistics")
 
