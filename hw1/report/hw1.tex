@@ -3,7 +3,7 @@
 % The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 \usepackage{algorithmic}
 \usepackage{graphicx}
 \usepackage{booktabs}
@@ -36,7 +36,7 @@ yvo@gtel.ufc.br}
 \maketitle
 
 \begin{abstract}
-The compressive strength of concrete impacts directly on its application. The difference between the concrete for columns or beams and the concrete for pavements is mainly due the compressive strength it is able to resist. In this work, we perform an unconditional and a class-conditional monovariate and bivariate analysis as well as an unconditional multivariate analysis (Principal Component Analysis) in the concrete database collected by UCI Machine Learning Repository (University of California, Irvine).
+The compressive strength of concrete impacts directly on its application. The difference between the concrete for columns or beams and the concrete for pavements is mainly due the compressive strength it is able to resist. In this work, we perform an unconditional and a class-conditional monovariate and bivariate analysis as well as an unconditional multivariate analysis (Principal Component Analysis) of a concrete database.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -44,14 +44,18 @@ concrete, compresive, strength, machine, learning, pre-processing
 \end{IEEEkeywords}
 
 \section{Introduction}
-A material formed by aggregates bonded together by a fluid material that hardens over time has been used by humans for construction since many years ago. Nowadays this material is known as concrete and it's widely used in the construction field. The aggregates used in the concrete affect directly its compressive strength which highly influences the concrete's application. This works tries to predict this compressive strength and to classify when the concrete is proper to be applied in structures. For instance the concrete for columns or beams needs to have more compressive strength than the one for pavement, in general. In the UCI database the concrete is tested with different components concentrations and different curing time (ages). 
+A material formed by aggregates bonded together by a fluid material that hardens over time has been used by humans for construction since many years ago. Nowadays this material is known as concrete and it's widely used in the construction field. The aggregates used in the concrete affect directly its compressive strength which highly impacts its applications. For instance, in general, the concrete for columns or beams needs to have a greater compressive strength than the one for pavement. On this paper, we carry out an statistical analysis on a dataset extracted from the UCI Machine Learning Repository (University of California, Irvine) that collects information about the concentration of some aggregates used to form different types of concretes and their resulting compressive strenght. 
 
-\section{Data description}
+The rest of this work is divided as follows. A description of the data is given in Section \ref{data_description}. The Section \ref{data_analysis} brings an unconditional and a class-conditional monovariate and bivariate analysis as well as an unconditional multivariate analysis of the data. Finally, we exponse our conclusions and considerations in Section \ref{conclusions}.
+
+% This works tries to predict this compressive strength and to classify when the concrete is proper to be applied in structures.  In the UCI database the concrete is tested with different components concentrations and different curing time (ages). 
+
+\section{Data description}\label{data_description}
 
 The composition of each of the $N$ concrete samples is given by the concentrations (kg/m\textsuperscript{3}) of $D$ components: Cement, Blast Furnace Slag, Fly Ash, Water, Superplasticizer, Coarse Aggregate and Fine Aggregate. Each sample has its Age (day) and the measured Concrete compressive strength (MPa), as described in Table~\ref{Data Description}
 
 \begin{table}[htp]
-\caption{Data Description}
+\caption{Data description}
 \begin{center}
   \begin{tabular}{@{} clc @{}}
     \toprule
@@ -70,14 +74,14 @@ The composition of each of the $N$ concrete samples is given by the concentratio
     \bottomrule
   \end{tabular}
 \end{center}
-\label{Data Description}
+\label{data_description_table}
 \end{table}%
 
 The concrete was stratified into $L=3$ classes\cite{b1}. This is, the concrete which is weak and not recommended for structures $L_1$, the \emph{Non-standard}. The concrete whose strength is in a range that can be applied to structures is classified as $L_2$, or \emph{Standard}. And the high performance concrete $L_3$, \emph{High-standard}.
 
 The observations are the measured compressive strengths of each sample and, as the predictors $D_1 - D_7$, are continuous. The Age ($D_8$) of the concrete is extremely discrete.
 
-\section{Data Analysis}
+\section{Data analysis}\label{data_analysis}
 
 In order to do future works, an analysis of the data is needed to understand them and perform their validation.
 
@@ -222,7 +226,7 @@ In the Figure~[] is shown the projection of the original data onto de first two 
 %\label{fig}
 \end{figure}
 
-\section{Conclusion}
+\section{Conclusion}\label{conclusions}
 
 The database of concrete is not easy to analyse if no knowledge about the problem of the mixture was studied. In none of the analysis the data have be shown as separable on the initially determined classes. The next step is to try to perform regression to model the compressive strength itself before trying to classify the samples.
 
