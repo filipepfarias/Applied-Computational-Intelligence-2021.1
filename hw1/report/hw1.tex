@@ -46,13 +46,13 @@ concrete, compresive, strength, machine, learning, pre-processing
 \section{Introduction}
 A material formed by aggregates bonded together by a fluid material that hardens over time has been used by humans for construction since many years ago. Nowadays this material is known as concrete and it's widely used in the construction field. The aggregates used in the concrete affect directly its compressive strength which highly impacts its applications. For instance, in general, the concrete for columns or beams needs to have a greater compressive strength than the one for pavement. On this paper, we carry out an statistical analysis on a dataset extracted from the UCI Machine Learning Repository (University of California, Irvine) that collects information about the concentration of some aggregates used to form different types of concretes and their resulting compressive strenght. 
 
-The rest of this work is divided as follows. A description of the data is given in Section \ref{data_description}. The Section \ref{data_analysis} brings an unconditional and a class-conditional monovariate and bivariate analysis as well as an unconditional multivariate analysis of the data. Finally, we exponse our conclusions and considerations in Section \ref{conclusions}.
+This work is divided as follows. A description of the data is given in Section \ref{data_description}. The Section \ref{data_analysis} brings an unconditional and a class-conditional mono-variate and bivariate analysis as well as an unconditional multivariate analysis of the data. Finally, the conclusions and considerations are exposed in Section \ref{conclusions}.
 
 % This works tries to predict this compressive strength and to classify when the concrete is proper to be applied in structures.  In the UCI database the concrete is tested with different components concentrations and different curing time (ages). 
 
 \section{Data description}\label{data_description}
 
-The composition of each of the $N$ concrete samples is given by the concentrations (kg/m\textsuperscript{3}) of $D$ components: Cement, Blast Furnace Slag, Fly Ash, Water, Superplasticizer, Coarse Aggregate and Fine Aggregate. Each sample has its Age (day) and the measured Concrete compressive strength (MPa), as described in Table~\ref{Data Description}
+The composition of each of the $N$ concrete samples is given by the concentrations (kg/m\textsuperscript{3}) of $D$ components: Cement, Blast Furnace Slag, Fly Ash, Water, Superplasticizer, Coarse Aggregate and Fine Aggregate. Each sample has its Age (day) and the measured Concrete compressive strength (MPa), as described in Table~\ref{data_description_table}
 
 \begin{table}[htp]
 \caption{Data description}
@@ -203,7 +203,8 @@ The statistics of each predictor is at Table~[].
 \end{figure}
 
 \begin{figure}[htbp]
-\centerline{\includegraphics[width=\columnwidth]{../figures/predictors_corr_matrix.pdf}}
+\centering
+\includegraphics[width=\columnwidth,trim={0 0 60 0},clip]{../figures/predictors_corr_matrix.pdf}
 \caption{Example of a figure caption.}
 \label{fig}
 \end{figure}
@@ -231,7 +232,7 @@ In the Figure~[] is shown the projection of the original data onto de first two 
 The database of concrete is not easy to analyse if no knowledge about the problem of the mixture was studied. In none of the analysis the data have be shown as separable on the initially determined classes. The next step is to try to perform regression to model the compressive strength itself before trying to classify the samples.
 
 \begin{thebibliography}{00}
-\bibitem{b1} ``Different types of concrete grades and their uses'' \url{https://www.baseconcrete.co.uk/different-types-of-concrete-grades-and-their-uses/}. Accessed on 25/05/2021.
+\bibitem{b1} ACI Manual of Concrete Practice 2000, Part 1: Materials and General Properties of Concrete.  American Concrete Institute.  Farmington Hills, MI.
 \bibitem{b2} Tibshirani, Robert, et al. The Elements of  Statistical Learning:  Data Mining, Inference, and Prediction. Alemanha, Springer New York, 2009.
 \end{thebibliography}
 \end{document}
