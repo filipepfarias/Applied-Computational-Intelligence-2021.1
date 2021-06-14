@@ -78,7 +78,7 @@ gr()
 println("Plotting monovariate histograms")
 f1 = @df concrete_df plot(cols(1:num_predictors), layout=grid(2,4), t = :histogram, bins = 8, 
     title = ["$i" for j in 1:1, i in predictor_names[:]], 
-    titlefontsize= 14, tickfontsize=10, size = (1000,1000),legend = false, lw = 0.1, framestyle = :box);
+    titlefontsize= 14, tickfontsize=10, size = (1000,700),legend = false, lw = 0.1, framestyle = :box);
 !save_for_report ? display(f1) : savefig(f1,figure_path("monovariate_histograms_allcategories.pdf"));
 
 println("Plotting class-conditional monovariate histograms")
@@ -87,7 +87,7 @@ for i = 1:num_predictors
     f2[i] = @df concrete_df groupedhist(cols(i), group = :Category, bins=8, lw = 0.1, framestyle = :box)
 end
 f2 = plot(f2..., layout = grid(2,4), title = ["$i" for j in 1:1, i in predictor_names[:]], 
-    titlefontsize= 14, tickfontsize=10, size = (1000,1000));
+    titlefontsize= 14, tickfontsize=10, size = (1000,700));
 !save_for_report ? display(f2) : savefig(f2,figure_path("monovariate_histograms_classcond.pdf"));
 
 println("Plotting unconditional bivariate histograms");
@@ -97,9 +97,9 @@ I  = LinearIndices(f3);
 for i in 1:size(f3)[1]
     for j in 1:size(f3)[2]
         if i == j
-            f3[i,i] = histogram(concrete_df[:,i], axis=true, ticks=false, legend=false, bins=10, lw = 0.1, framestyle = :box)
+            f3[i,i] = @df concrete_df groupedhist(cols(i), group = :Category, axis=true, ticks=false, legend=false, bins=10, lw = 0.1, framestyle = :box)
         else
-            f3[i,j] = scatter(concrete_df[:,i],concrete_df[:,j],axis=true, ticks=false, legend=false; markerstrokecolor=:white, markerstrokewidth=0.5, markersize=2, framestyle = :box)
+            f3[i,j] = @df concrete_df scatter(cols(i), cols(j), group = :Category, axis=true, ticks=false, legend=false; markerstrokecolor=:white, markerstrokewidth=0.1, markersize=2.7, framestyle = :box)
         end
         
         j == 1 ? plot!(f3[I[i,j]], xguide=L"D_{%$i}",xmirror = true, xguideposition= :top) : plot!(f3[I[i,j]], top_margin=-2Plots.mm)
@@ -107,32 +107,8 @@ for i in 1:size(f3)[1]
     end
 end
 
-f3 = plot(f3...,layout = grid(8,8), dpi=170, size=(700,700));
+f3 = plot(f3...,layout = grid(8,8), dpi=90, size=(800,800));
 !save_for_report ? display(f3) : savefig(f3,figure_path("bivariate_histograms_allclass.pdf"));
-
-println("Plotting class-conditional bivariate histograms");
-
-f4 = Matrix{}(undef,8,8);
-I  = LinearIndices(f4);
-for i in 1:size(f4)[1]
-    for j in 1:size(f4)[2]
-        if i == j
-            for i = 1:num_predictors 
-                f4[i, i] = @df concrete_df groupedhist(cols(i), group = :Category, axis=true, ticks=false, legend=false, bins=10, lw = 0.1, framestyle = :box)
-            end
-        else
-            for i = 1:num_predictors 
-                f4[i, j] = @df concrete_df scatter(cols(i), cols(j), group = :Category, axis=true, ticks=false, legend=false; markerstrokecolor=:white, markerstrokewidth=0.1, markersize=2, framestyle = :box)
-            end
-        end
-        
-        j == 1 ? plot!(f4[I[i,j]], xguide=L"D_{%$i}", xmirror = true, xguideposition= :top) : plot!(f4[I[i,j]], top_margin=-2Plots.mm)
-        i == 1 ? plot!(f4[I[i,j]], yguide=L"D_{%$j}", ymirror = true, yguideposition= :left) : plot!(f4[I[i,j]], left_margin=-2Plots.mm)
-    end
-end
-
-f4 = plot(f4...,layout = grid(8,8), dpi=170, size=(700,700));
-!save_for_report ? display(f4) : savefig(f4,figure_path("bivariate_histograms_classcond.pdf"));
 
 println("Executing PCA");
 concrete_pca              = MultivariateStats.fit(MultivariateStats.PCA, concrete_matrix', pratio=1);
@@ -143,20 +119,21 @@ not_standard  = concrete_projected_matrix[:, concrete_df[:, "Category"] .== 1]
 standard      = concrete_projected_matrix[:, concrete_df[:, "Category"] .== 2]
 high_strength = concrete_projected_matrix[:, concrete_df[:, "Category"] .== 3]
 
-
-f5 = scatter(not_standard[1,:], not_standard[2,:], marker=:circle,linewidth=0, label=L"not~standard", markerstrokecolor=:white, markerstrokewidth=0.5)
-f5 = scatter!(standard[1,:], standard[2,:], marker=:circle, linewidth=0, label=L"standard", markerstrokecolor=:white, markerstrokewidth=0.5)
-f5 = scatter!(high_strength[1,:], high_strength[2,:], marker=:circle, linewidth=0, label=L"high~strength", markerstrokecolor=:white, markerstrokewidth=0.5)
-f5 = plot!(f5, xlabel=L"First~principal~component", ylabel=L"Second~principal~component", legend=:topleft, legendfontsize = 6, framestyle = :box);
+f4 = scatter(not_standard[1,:], not_standard[2,:], marker=:circle,linewidth=0, label=L"not~standard", markerstrokecolor=:white, markerstrokewidth=0.5)
+f4 = scatter!(standard[1,:], standard[2,:], marker=:circle, linewidth=0, label=L"standard", markerstrokecolor=:white, markerstrokewidth=0.5)
+f4 = scatter!(high_strength[1,:], high_strength[2,:], marker=:circle, linewidth=0, label=L"high~strength", markerstrokecolor=:white, markerstrokewidth=0.5)
+f4 = plot!(f4, xlabel=L"First~principal~component", ylabel=L"Second~principal~component", legend=:topleft, legendfontsize = 6, framestyle = :box);
 
 for i in 1:num_predictors
     x = concrete_pca_projection_matrix[i,1]
     y = concrete_pca_projection_matrix[i,2]
-    f5 = plot!(f5, [0, x],[0, y],arrow=true,color=:black,linewidth=1.5,label="")
+    f4 = plot!(f4, [0, x],[0, y],arrow=true,color=:black,linewidth=1.5,label="")
     annotate!(x * 1.15, y * 1.15, text(i, :black, 5), :black)
 end
 
-!save_for_report ? display(f5) : savefig(f5,figure_path("pca_scatter_plot.pdf"));
+!save_for_report ? display(f4) : savefig(f4,figure_path("pca_scatter_plot.pdf"));
 
 f6 = plot(principalvars(concrete_pca), xlabel=L"Principal~components", ylabel=L"Variance", legend = false, framestyle = :box);
-!save_for_report ? display(f6) : savefig(f6,figure_path("pca_variance.pdf"));
+!save_for_report ? display(f5) : savefig(f6,figure_path("pca_variance.pdf"));
+
+println("\nFinished!")
