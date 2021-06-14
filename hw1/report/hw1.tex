@@ -36,7 +36,7 @@ yvo@gtel.ufc.br}
 \maketitle
 
 \begin{abstract}
-The compressive strength of concrete impacts directly on its application. The difference between the concrete for columns or beams and the concrete for pavements is mainly due the compressive strength it is able to resist. In this work, we perform an unconditional and a class-conditional monovariate and bivariate analysis as well as an unconditional multivariate analysis (Principal Component Analysis) of a concrete database.
+The compressive strength of concrete impacts directly on its application. The difference between the concrete for columns or beams and the concrete for pavements is mainly due the compressive strength it is able to resist. In this work, we perform an unconditional and a class-conditional mono-variate analysis as well as unconditional bi-variate and multi-variate analysis of a concrete database.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -44,9 +44,9 @@ concrete, compresive, strength, machine, learning, pre-processing
 \end{IEEEkeywords}
 
 \section{Introduction}
-A material formed by aggregates bonded together by a fluid material that hardens over time has been used by humans for construction since many years ago\cite{Mindess}. Nowadays this material is known as concrete and it's widely used in the construction field. The aggregates used in the concrete affect directly its compressive strength which highly impacts its applications. For instance, in general, the concrete for columns or beams needs to have a greater compressive strength than the one for pavement. On this paper, we carry out an statistical analysis on a dataset extracted from the UCI Machine Learning Repository (University of California, Irvine) that collects information about the concentration of some aggregates used to form different types of concretes and their resulting compressive strenght. 
+A material formed by aggregates bonded together by a fluid material that hardens over time has been used by humans for construction since many years ago\cite{b3}. Nowadays this material is known as concrete and it's widely used in the construction field. The aggregates used in the concrete affect directly its compressive strength which highly impacts its applications. For instance, in general, the concrete for columns or beams needs to have a greater compressive strength than the one for pavement. On this paper, we carry out an statistical analysis on a dataset extracted from the UCI Machine Learning Repository (University of California, Irvine) that collects information about the concentration of some aggregates used to form different types of concretes and their resulting compressive strenght. 
 
-This work is divided as follows. A description of the data is given in Section \ref{data_description}. The Section \ref{data_analysis} brings an unconditional and a class-conditional mono-variate and bivariate analysis as well as an unconditional multivariate analysis of the data. Finally, the conclusions and considerations are exposed in Section \ref{conclusions}.
+This work is divided as follows. A description of the data is given in Section \ref{data_description}. The Section \ref{data_analysis} brings an unconditional and a class-conditional mono-variate analysis as well as unconditional bi-variate and multi-variate analysis of the data. Finally, the conclusions and considerations are exposed in Section \ref{conclusions}.
 
 % This works tries to predict this compressive strength and to classify when the concrete is proper to be applied in structures.  In the UCI database the concrete is tested with different components concentrations and different curing time (ages). 
 
@@ -77,7 +77,7 @@ The composition of each of the $N$ concrete samples is given by the concentratio
 \label{data_description_table}
 \end{table}%
 
-The concrete was stratified into $L=3$ classes\cite{article1}. This is, the concrete which is weak and not recommended for structures $L_1$, the \emph{Non-standard}. The concrete whose strength is in a range that can be applied to structures is classified as $L_2$, or \emph{Standard}. And the high performance concrete $L_3$, \emph{High-standard}.
+The concrete was stratified into $L=3$ classes\cite{b1}. This is, the concrete which is weak and not recommended for structures $L_1$, the \emph{Non-standard}. The concrete whose strength is in a range that can be applied to structures is classified as $L_2$, or \emph{Standard}. And the high performance concrete $L_3$, \emph{High-standard}.
 
 The observations are the measured compressive strengths of each sample and, as the predictors $D_1 - D_7$, are continuous. The Age ($D_8$) of the concrete is extremely discrete.
 
@@ -109,15 +109,15 @@ The statistics of each predictor is obtained performing a mono-variate analysis.
 \label{statistics_table_alldataset}
 \end{table}%
 
-In Table~\ref{statistics_table_alldataset} it is possible to see that the data are not \emph{highly skewed}, but yet are needed to be normalised to zero mean and the unitary standard deviation. This can be easier shown in Figure~\ref{Unconditional predictors histogram}.
+In Table~\ref{statistics_table_alldataset} it is possible to see that the data are not \emph{highly skewed}, but yet are needed to be normalised to zero mean and the unitary standard deviation. This can be easier shown in Figure~\ref{uncond_monovariate}.
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=\columnwidth]{../figures/monovariate_histograms_allcategories}}
-\caption{Example of a figure caption.}
-\label{Unconditional predictors histogram}
+\caption{Predictors' histograms for the unconditional monovariate analysis.}
+\label{uncond_monovariate}
 \end{figure}
 
-An interesting fact is that the components that, in general, are not absent in the concrete composition has the lower skewness, as Cement, Water, Coarse and Fine Aggregates. The other components have higher skewness due to the fact they are optional in concrete mixture, thus they are allowed to have zero values in some concrete samples. Another seeable fact is the discreteness of the Age values. In general the concrete achieves the \emph{cure} at the end of 28 days. This fact explains the size of the bins in the histogram $D_8$ on Figure~\ref{Unconditional predictors histogram} between 0 and 100. The other cure periods are sampled in dataset to test its influence in compressive strength.
+An interesting fact is that the components that, in general, are not absent in the concrete composition has the lower skewness, as Cement, Water, Coarse and Fine Aggregates. The other components have higher skewness due to the fact they are optional in concrete mixture, thus they are allowed to have zero values in some concrete samples. Another seeable fact is the discreteness of the Age values. In general the concrete achieves the \emph{cure} at the end of 28 days. This fact explains the size of the bins in the histogram $D_8$ on Figure~\ref{uncond_monovariate} between 0 and 100. The other cure periods are sampled in dataset to test its influence in compressive strength.
 
 \subsection{Class-conditional mono-variate analysis}
 
@@ -184,8 +184,8 @@ An interesting fact is that the components that, in general, are not absent in t
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=\columnwidth]{../figures/monovariate_histograms_classcond}}
-\caption{Example of a figure caption.}
-\label{fig}
+\caption{Predictors' histograms for the class-conditional monovariate analysis with each color representing a different class.}
+\label{classcond_monovariate}
 \end{figure}
 
 As mentioned before, a Gaussian-like distribution can be noticed on the components except the Superplasticizer and the Age. On the other ones, as in Fly Ash, there's a large number of zeros. This behaviour is repeated on the three classes. There's no apparent discretion between the classes too. In the trial to adjust the data of each component class into a Gaussian distribution, it was noticed that a mixture model would fits better given we have exact zeros and a distribution of non zero values. This is reasonable because the zero values are the representative absence of the component.
@@ -198,14 +198,14 @@ The statistics of each predictor is at Table~[].
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=\columnwidth]{../figures/bivariate_histograms_classcond.pdf}}
-\caption{Example of a figure caption.}
+\caption{Predictors' histograms and scatter plots for the unconditional bi-variate analysis with each color representing a different class.}
 %\label{fig}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\columnwidth,trim={0 0 60 0},clip]{../figures/predictors_corr_matrix.pdf}
-\caption{Example of a figure caption.}
+\caption{Predictors' correlation matrix.}
 \label{fig}
 \end{figure}
 
