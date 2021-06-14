@@ -121,10 +121,10 @@ not_standard  = concrete_projected_matrix[:, concrete_df[:, "Category"] .== 1]
 standard      = concrete_projected_matrix[:, concrete_df[:, "Category"] .== 2]
 high_strength = concrete_projected_matrix[:, concrete_df[:, "Category"] .== 3]
 
-f4 = scatter(not_standard[1,:], not_standard[2,:], marker=:circle,linewidth=0, label=L"not~standard", markerstrokecolor=:white, markerstrokewidth=0.5)
-f4 = scatter!(standard[1,:], standard[2,:], marker=:circle, linewidth=0, label=L"standard", markerstrokecolor=:white, markerstrokewidth=0.5)
-f4 = scatter!(high_strength[1,:], high_strength[2,:], marker=:circle, linewidth=0, label=L"high~strength", markerstrokecolor=:white, markerstrokewidth=0.5)
-f4 = plot!(f4, xlabel=L"First~principal~component", ylabel=L"Second~principal~component", legend=:topleft, legendfontsize = 6, framestyle = :box);
+f4 = scatter(not_standard[1,:], not_standard[2,:], marker=:circle,linewidth=0, label="Not Standard", markerstrokecolor=:white, markerstrokewidth=0.5)
+f4 = scatter!(standard[1,:], standard[2,:], marker=:circle, linewidth=0, label="Standard", markerstrokecolor=:white, markerstrokewidth=0.5)
+f4 = scatter!(high_strength[1,:], high_strength[2,:], marker=:circle, linewidth=0, label="High Strength", markerstrokecolor=:white, markerstrokewidth=0.5)
+f4 = plot!(f4, xlabel="PC1", ylabel="PC2", legend=:topleft, legendfontsize = 6, framestyle = :box);
 
 for i in 1:num_predictors
     x = concrete_pca_projection_matrix[i,1]
