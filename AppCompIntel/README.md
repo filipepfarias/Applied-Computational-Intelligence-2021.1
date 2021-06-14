@@ -7,3 +7,4 @@
 ```include(hw1run.jl)```
 
 - Some packages needs to be installed and this will throw an error asking you to ```add``` them.
+- The report is at ```\hw1\report\hw1.pdf```.
