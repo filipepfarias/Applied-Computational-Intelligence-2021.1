@@ -133,7 +133,7 @@ end
 
 !save_for_report ? display(f4) : savefig(f4,figure_path("pca_scatter_plot.pdf"));
 
-f6 = plot(principalvars(concrete_pca), xlabel=L"Principal~components", ylabel=L"Variance", legend = false, framestyle = :box);
+f5 = plot(principalvars(concrete_pca), xlabel=L"Principal~components", ylabel=L"Variance", legend = false, framestyle = :box);
 !save_for_report ? display(f5) : savefig(f6,figure_path("pca_variance.pdf"));
 
 println("\nFinished!")
