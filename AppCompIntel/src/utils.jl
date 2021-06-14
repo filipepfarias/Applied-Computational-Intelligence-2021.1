@@ -9,5 +9,5 @@ function get_category(strength)
 end
 
 function figure_path(figure_name)
-    return eval(@__DIR__)*"/../../hw1/figures/"*figure_name
+    return eval(@__DIR__)*"/../hw1/figures/"*figure_name
 end
