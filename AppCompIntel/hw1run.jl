@@ -17,10 +17,8 @@ concrete_df = CSV.File(eval(@__DIR__)*"/../data/Concrete_Data.csv") |> DataFrame
 transform!(concrete_df, "Concrete compressive strength (MPa)" => ByRow(strength -> get_category(strength)) => "Category");
 
 strength_categories = Array(["Non-standard", "Standard", "High strength"]);
-predictor_names = names(concrete_df)[1:end-2];
-concrete_matrix = Matrix{Real}(concrete_df[:,predictor_names]);
-
-concrete_matrix = Matrix{Real}(concrete_df[:, predictor_names]);
+predictor_names = Array([L"D_1", L"D_2", L"D_3", L"D_4", L"D_5", L"D_6", L"D_7", L"D_8",]);
+concrete_matrix = Matrix{Float64}(concrete_df[:,1:end-2]);
 concrete_matrix = (concrete_matrix .- mean(concrete_matrix, dims=1)) ./ std(concrete_matrix, dims=1)
 
 num_predictors   = length(predictor_names);
@@ -34,12 +32,12 @@ predictors_statistics_notstandard_df  = DataFrame()
 predictors_statistics_standard_df     = DataFrame()
 predictors_statistics_highstrength_df = DataFrame()
 
-for predictor_name in predictor_names
-    predictor_array = Array(concrete_df[:, predictor_name])
+for predictor_idx in 1:num_predictors
+    predictor_array = Array(concrete_df[:, predictor_idx])
 
-    predictor_array_notstandard = Array(concrete_df[concrete_df[:, "Category"] .== 1, predictor_name])
-    predictor_array_standard = Array(concrete_df[concrete_df[:, "Category"] .== 2, predictor_name])
-    predictor_array_highstrength = Array(concrete_df[concrete_df[:, "Category"] .== 3, predictor_name])
+    predictor_array_notstandard = Array(concrete_df[concrete_df[:, "Category"] .== 1, predictor_idx])
+    predictor_array_standard = Array(concrete_df[concrete_df[:, "Category"] .== 2, predictor_idx])
+    predictor_array_highstrength = Array(concrete_df[concrete_df[:, "Category"] .== 3, predictor_idx])
 
     append!(predictors_statistics_df, 
         DataFrame(mean = mean(predictor_array), std = std(predictor_array), gamma = skewness(predictor_array))
@@ -70,21 +68,23 @@ println("Evaluating correlation matrix");
 predictors_corr_matrix = cor(concrete_matrix, concrete_matrix)
 
 pyplot()
+
 f = heatmap(predictor_names, predictor_names, predictors_corr_matrix, 
     xrotation=20,framestyle=:box,clim=(-1,1),color=:balance,aspect_ratio=:equal);
 !save_for_report ? display(f) : savefig(f,figure_path("predictors_corr_matrix.pdf"));
 
 gr()
+
 println("Plotting monovariate histograms")
 f1 = @df concrete_df plot(cols(1:num_predictors), layout=grid(2,4), t = :histogram, bins = 8, 
     title = ["$i" for j in 1:1, i in predictor_names[:]], 
-    titlefontsize= 14, tickfontsize=10, size = (1000,1000),legend = false);
+    titlefontsize= 14, tickfontsize=10, size = (1000,1000),legend = false, lw = 0.1, framestyle = :box);
 !save_for_report ? display(f1) : savefig(f1,figure_path("monovariate_histograms_allcategories.pdf"));
 
 println("Plotting class-conditional monovariate histograms")
 f2 = Array{Any}(undef,num_predictors);
 for i = 1:num_predictors 
-    f2[i] = @df concrete_df groupedhist(cols(i), group = :Category, bins=8)
+    f2[i] = @df concrete_df groupedhist(cols(i), group = :Category, bins=8, lw = 0.1, framestyle = :box)
 end
 f2 = plot(f2..., layout = grid(2,4), title = ["$i" for j in 1:1, i in predictor_names[:]], 
     titlefontsize= 14, tickfontsize=10, size = (1000,1000));
@@ -97,9 +97,9 @@ I  = LinearIndices(f3);
 for i in 1:size(f3)[1]
     for j in 1:size(f3)[2]
         if i == j
-            f3[i,i] = histogram(concrete_df[:,i], axis=false, ticks=false, legend=false, bins=10)
+            f3[i,i] = histogram(concrete_df[:,i], axis=true, ticks=false, legend=false, bins=10, lw = 0.1, framestyle = :box)
         else
-            f3[i,j] = scatter(concrete_df[:,i],concrete_df[:,j],axis=false, ticks=false, legend=false; markerstrokewidth=.25, markersize=2)
+            f3[i,j] = scatter(concrete_df[:,i],concrete_df[:,j],axis=true, ticks=false, legend=false; markerstrokecolor=:white, markerstrokewidth=0.5, markersize=2, framestyle = :box)
         end
         
         j == 1 ? plot!(f3[I[i,j]], xguide=L"D_{%$i}",xmirror = true, xguideposition= :top) : plot!(f3[I[i,j]], top_margin=-2Plots.mm)
@@ -110,8 +110,32 @@ end
 f3 = plot(f3...,layout = grid(8,8), dpi=170, size=(700,700));
 !save_for_report ? display(f3) : savefig(f3,figure_path("bivariate_histograms_allclass.pdf"));
 
+println("Plotting class-conditional bivariate histograms");
+
+f4 = Matrix{}(undef,8,8);
+I  = LinearIndices(f4);
+for i in 1:size(f4)[1]
+    for j in 1:size(f4)[2]
+        if i == j
+            for i = 1:num_predictors 
+                f4[i, i] = @df concrete_df groupedhist(cols(i), group = :Category, axis=true, ticks=false, legend=false, bins=10, lw = 0.1, framestyle = :box)
+            end
+        else
+            for i = 1:num_predictors 
+                f4[i, j] = @df concrete_df scatter(cols(i), cols(j), group = :Category, axis=true, ticks=false, legend=false; markerstrokecolor=:white, markerstrokewidth=0.1, markersize=2, framestyle = :box)
+            end
+        end
+        
+        j == 1 ? plot!(f4[I[i,j]], xguide=L"D_{%$i}", xmirror = true, xguideposition= :top) : plot!(f4[I[i,j]], top_margin=-2Plots.mm)
+        i == 1 ? plot!(f4[I[i,j]], yguide=L"D_{%$j}", ymirror = true, yguideposition= :left) : plot!(f4[I[i,j]], left_margin=-2Plots.mm)
+    end
+end
+
+f4 = plot(f4...,layout = grid(8,8), dpi=170, size=(700,700));
+!save_for_report ? display(f4) : savefig(f4,figure_path("bivariate_histograms_classcond.pdf"));
+
 println("Executing PCA");
-concrete_pca              = MultivariateStats.fit(MultivariateStats.PCA, concrete_matrix', maxoutdim=2);
+concrete_pca              = MultivariateStats.fit(MultivariateStats.PCA, concrete_matrix', pratio=1);
 concrete_pca_projection_matrix = MultivariateStats.projection(concrete_pca)
 concrete_projected_matrix = MultivariateStats.transform(concrete_pca, concrete_matrix');
 
@@ -119,22 +143,20 @@ not_standard  = concrete_projected_matrix[:, concrete_df[:, "Category"] .== 1]
 standard      = concrete_projected_matrix[:, concrete_df[:, "Category"] .== 2]
 high_strength = concrete_projected_matrix[:, concrete_df[:, "Category"] .== 3]
 
-#pgfplotsx()
 
-f4 = scatter(not_standard[1,:], not_standard[2,:], marker=:circle,linewidth=0, label="not standard", markerstrokealpha = 0)
-f4 = scatter!(standard[1,:], standard[2,:], marker=:circle, linewidth=0, label="standard", markerstrokealpha = 0)
-f4 = scatter!(high_strength[1,:], high_strength[2,:], marker=:circle, linewidth=0, label="high strength", markerstrokealpha = 0)
-f4 = plot!(f4, xlabel="First principal component", ylabel="Second principal component", legendtitle="Concrete category", legend=:outertop, legendnrows=1);
+f5 = scatter(not_standard[1,:], not_standard[2,:], marker=:circle,linewidth=0, label=L"not~standard", markerstrokecolor=:white, markerstrokewidth=0.5)
+f5 = scatter!(standard[1,:], standard[2,:], marker=:circle, linewidth=0, label=L"standard", markerstrokecolor=:white, markerstrokewidth=0.5)
+f5 = scatter!(high_strength[1,:], high_strength[2,:], marker=:circle, linewidth=0, label=L"high~strength", markerstrokecolor=:white, markerstrokewidth=0.5)
+f5 = plot!(f5, xlabel=L"First~principal~component", ylabel=L"Second~principal~component", legend=:topleft, legendfontsize = 6, framestyle = :box);
 
 for i in 1:num_predictors
     x = concrete_pca_projection_matrix[i,1]
     y = concrete_pca_projection_matrix[i,2]
-    f4 = plot!(f4, [0, x],[0, y],arrow=true,color=:black,linewidth=1,label="")
+    f5 = plot!(f5, [0, x],[0, y],arrow=true,color=:black,linewidth=1.5,label="")
     annotate!(x * 1.15, y * 1.15, text(i, :black, 5), :black)
 end
 
-!save_for_report ? display(f4) : savefig(f4,figure_path("pca_scatter_plot.pdf"));
+!save_for_report ? display(f5) : savefig(f5,figure_path("pca_scatter_plot.pdf"));
 
-f5 = plot(principalvars(concrete_pca), xlabel="Principal components", ylabel="Variance", legend = false);
-!save_for_report ? display(f5) : savefig(f5,figure_path("pca_variance.pdf"));
-
+f6 = plot(principalvars(concrete_pca), xlabel=L"Principal~components", ylabel=L"Variance", legend = false, framestyle = :box);
+!save_for_report ? display(f6) : savefig(f6,figure_path("pca_variance.pdf"));
