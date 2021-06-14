@@ -36,7 +36,7 @@ yvo@gtel.ufc.br}
 \maketitle
 
 \begin{abstract}
-The compressive strength of concrete impacts directly on its application. The difference between the concrete for columns or beams and the concrete for pavements is mainly due the compressive strength it is able to resist. In this work, we perform unconditional and class-conditional monovariate and bivariate analysis as well as multivariate analysis (Principal Component Analysis) in the concrete database collected by UCI Machine Learning Repository (University of California, Irvine).
+The compressive strength of concrete impacts directly on its application. The difference between the concrete for columns or beams and the concrete for pavements is mainly due the compressive strength it is able to resist. In this work, we perform an unconditional and a class-conditional monovariate and bivariate analysis as well as an unconditional multivariate analysis (Principal Component Analysis) in the concrete database collected by UCI Machine Learning Repository (University of California, Irvine).
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -113,8 +113,7 @@ In Table~\ref{statistics_table_alldataset} it is possible to see that the data a
 \label{fig}
 \end{figure}
 
-An interesting fact is that the components that, in general are not absent in the concrete composition has the lower skewness. These components are beyond Cement and Water, Coarse and Fine Aggregates. The other components have higher skewness due to the fact they are optional in concrete mixture, thus they allow to have zero values in some samples. Another seeable fact is the discreteness of the Age values. In general the concrete achiev
-es the \emph{cure} at the end of 28 days. this explains the size of the bins between 0 and 100. The other cure periods are sampled in dataset to test its influence in compressive strenght.
+An interesting fact is that the components that, in general are not absent in the concrete composition has the lower skewness. These components are beyond Cement and Water, Coarse and Fine Aggregates. The other components have higher skewness due to the fact they are optional in concrete mixture, thus they allow to have zero values in some samples. Another seeable fact is the discreteness of the Age values. In general the concrete achives the \emph{cure} at the end of 28 days. This fact explains the size of the bins between 0 and 100. The other cure periods are sampled in dataset to test its influence in compressive strenght.
 
 \subsection{Class-conditional mono-variate analysis}
 
@@ -188,7 +187,7 @@ es the \emph{cure} at the end of 28 days. this explains the size of the bins bet
 
 As mentioned before, a Gaussian-like distribution can be noticed on the components except the Superplasticizer and the Age. On the other ones, as in Fly Ash, there's a large number of zeros. This behaviour is repeated on the three classes. There's no apparent discretion between the classes too. In the trial to adjust the data of each component class into a Gaussian distribution, it was noticed that a mixture model would fits better given we have exact zeros and a distribution of non zero values. This is reasonable because the zero values are the representative absence of the component.
 
-\subsection{Class-conditional bi-variate analysis}
+\subsection{Unconditional bivariate analysis}
 
 In the pairwise comparison of the predictors, only in $(D_4,D_5)$, the Superplasticizer and Water concentrations, has a prominent negative correlation. The other predictors seemed do not have stronger correlations. Then it was not considered eliminate predictors to simplify the problem. In the same manner mentioned before, visually it was not possible to specify a predictor that might separate the classes.
 
@@ -206,7 +205,16 @@ The statistics of each predictor is at Table~[].
 \label{fig}
 \end{figure}
 
-\subsection{Unconditional multi-variate analysis (PCA)}
+\subsection{Class-conditional bivariate analysis}
+
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=\columnwidth]{../figures/bivariate_histograms_classcond.pdf}}
+\caption{Example of a figure caption.}
+%\label{fig}
+\end{figure}
+
+\subsection{Unconditional multivariate analysis (PCA)}
 
 How the PCs comprises the original variance is plotted on Figure~[]. The original predictors are projected onto the PCs space, Figure~[]. Note the first component, the cement $D_1$ has less information in the first two PCs components. An interesting fact about this is to know that the cement can even turns the concrete weaker to compression as long its concentration grows. The compression strength will be given by the aggregate and some chemicals, which are the predictors of major norm in the projection.
 
