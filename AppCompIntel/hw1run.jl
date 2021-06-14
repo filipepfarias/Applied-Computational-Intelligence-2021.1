@@ -102,12 +102,14 @@ for i in 1:size(f3)[1]
             f3[i,j] = @df concrete_df scatter(cols(i), cols(j), group = :Category, axis=true, ticks=false, legend=false; markerstrokecolor=:white, markerstrokewidth=0.1, markersize=2.7, framestyle = :box)
         end
         
-        j == 1 ? plot!(f3[I[i,j]], xguide=L"D_{%$i}",xmirror = true, xguideposition= :top) : plot!(f3[I[i,j]], top_margin=-2Plots.mm)
+        j == 1 ? plot!(f3[I[i,j]], xguide=L"D_{%$i}",xmirror = false, xguideposition= :bottom) : plot!(f3[I[i,j]], bottom_margin=-2Plots.mm)
         i == 1 ? plot!(f3[I[i,j]], yguide=L"D_{%$j}", ymirror = true, yguideposition= :left) : plot!(f3[I[i,j]], left_margin=-2Plots.mm)
     end
 end
 
-f3 = plot(f3...,layout = grid(8,8), dpi=90, size=(800,800));
+f3 = reverse(f3, dims=2);
+
+f3 = plot(f3...,layout = grid(8,8), dpi=90, size=(650,650));
 !save_for_report ? display(f3) : savefig(f3,figure_path("bivariate_histograms_allclass.pdf"));
 
 println("Executing PCA");
