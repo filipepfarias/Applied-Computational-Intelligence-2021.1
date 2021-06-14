@@ -86,7 +86,7 @@ In order to do future works, an analysis of the data is needed to understand the
 The statistics of each predictor is obtained performing a mono-variate analysis. At this step is possible to verify how the data is distributed.
 
 \begin{table}[htp]
-\caption{Data Statistics Summary}
+\caption{Statistics summary for the entire dataset}
   \centering
   \begin{tabular}{@{} crrr @{}}
     \toprule
@@ -118,13 +118,75 @@ es the \emph{cure} at the end of 28 days. this explains the size of the bins bet
 
 \subsection{Class-conditional mono-variate analysis}
 
+
+\begin{table}[htp]
+  \caption{Statistics summary for class 1}
+    \centering
+    \begin{tabular}{@{} crrr @{}}
+      \toprule
+       & Mean & STD & Skewness \\ 
+      \midrule
+      $D_1$ & 227.649  &   77.9188  &   0.813198 \\ 
+      $D_2$ & 59.1078  &  85.7506  &   1.15493 \\ 
+      $D_3$ & 58.1166  &  69.7541   &  0.558909 \\ 
+      $D_4$ & 185.405  &   15.7587  &  -0.933526\\ 
+      $D_5$ & 3.96847  &  4.77879  &  0.781783 \\ 
+      $D_6$ & 994.762   &  70.8093  &  -0.143029 \\ 
+      $D_7$ & 794.88   &   66.6208  &  -0.116007 \\ 
+      $D_8$ & 13.9322  &  15.9189  &   4.75222 \\       
+      \bottomrule
+    \end{tabular}
+  \label{Data Statistics Summary}
+  \end{table}%
+
+  \begin{table}[htp]
+    \caption{Statistics summary for class 2}
+      \centering
+      \begin{tabular}{@{} crrr @{}}
+        \toprule
+         & Mean & STD & Skewness \\ 
+        \midrule
+        $D_1$ & 277.673  &  97.8943  &  0.480469 \\ 
+        $D_2$ & 75.5691 &  87.3597  &  0.793451\\ 
+        $D_3$ & 57.6739 &  61.9693  &  0.330694 \\ 
+        $D_4$ & 184.16   &  21.6533 &   0.16274 \\ 
+        $D_5$ & 6.04743  & 5.55232  & 0.745442 \\ 
+        $D_6$ & 967.124 &   75.0478  & -0.114811 \\ 
+        $D_7$ & 767.236  &  82.4853 &  -0.332702 \\ 
+        $D_8$ & 53.2952  & 69.2818  &  3.02584 \\       
+        \bottomrule
+      \end{tabular}
+    \label{Data Statistics Summary}
+    \end{table}%
+
+    \begin{table}[htp]
+      \caption{Statistics summary for class 3}
+        \centering
+        \begin{tabular}{@{} crrr @{}}
+          \toprule
+           & Mean & STD & Skewness \\ 
+          \midrule
+          $D_1$ & 365.087  &  100.273  &  -0.0967353 \\ 
+          $D_2$ & 90.4862  &  81.1218  &  0.403134 \\ 
+          $D_3$ & 39.9562 &   58.619   &  0.978704 \\ 
+          $D_4$ & 169.694  &   23.2573  &  0.97391 \\ 
+          $D_5$ & 9.73905  &  6.82741  & 0.756237 \\ 
+          $D_6$ & 956.722   &  87.007  &   0.367005 \\ 
+          $D_7$ & 759.52   &   86.0634  &  0.162043 \\ 
+          $D_8$ & 71.1524   & 70.9618  &  2.53224 \\       
+          \bottomrule
+        \end{tabular}
+      \label{Data Statistics Summary}
+      \end{table}%
+
+
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=\columnwidth]{../figures/monovariate_histograms_classcond}}
 \caption{Example of a figure caption.}
 \label{fig}
 \end{figure}
 
-As mentioned before, a Gaussian like distribution can distribution can be noticed on the components except the Superplasticizer and the Age. On the other ones, as in Fly Ash, there's a large number of zeros. This behaviour is repeated on the three classes. There's no apparent discretion between the classes too. In the trial to adjust the data of each component class into a Gaussian distribution, it was noticed that a mixture model would fits better given we have exact zeros and a distribution of non zero values. This is reasonable because the zero values are the representative absence of the component.
+As mentioned before, a Gaussian-like distribution can be noticed on the components except the Superplasticizer and the Age. On the other ones, as in Fly Ash, there's a large number of zeros. This behaviour is repeated on the three classes. There's no apparent discretion between the classes too. In the trial to adjust the data of each component class into a Gaussian distribution, it was noticed that a mixture model would fits better given we have exact zeros and a distribution of non zero values. This is reasonable because the zero values are the representative absence of the component.
 
 \subsection{Class-conditional bi-variate analysis}
 
