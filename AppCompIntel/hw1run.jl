@@ -11,7 +11,7 @@ using MultivariateStats
 println("Running HW1");
 println("Loading Concrete dataset");
 
-save_for_report = false;
+save_for_report = true;
 
 concrete_df = CSV.File(eval(@__DIR__)*"/../data/Concrete_Data.csv") |> DataFrame;
 transform!(concrete_df, "Concrete compressive strength (MPa)" => ByRow(strength -> get_category(strength)) => "Category");
@@ -35,13 +35,17 @@ predictors_statistics_notstandard_df  = DataFrame();
 predictors_statistics_standard_df     = DataFrame();
 predictors_statistics_highstrength_df = DataFrame();
 
-pretty_table(predictors_statistics_df, title="Class Unconditional Predictors Statistics")
+println("\nClass Unconditional Predictors Statistics\n")
+pretty_table(predictors_statistics_df)
 # sleep(1.5);
-pretty_table(predictors_statistics_notstandard_df, title="Class 1 Predictors Statistics")
+println("\nClass 1 Predictors Statistics\n")
+pretty_table(predictors_statistics_notstandard_df)
 # sleep(1.5);
-pretty_table(predictors_statistics_standard_df, title="Class 2 Predictors Statistics")
+println("\nClass 2 Predictors Statistics\n")
+pretty_table(predictors_statistics_standard_df)
 # sleep(1.5);
-pretty_table(predictors_statistics_highstrength_df, title="Class 3 Predictors Statistics")
+println("\nClass 3 Predictors Statistics\n")
+pretty_table(predictors_statistics_highstrength_df)
 # sleep(1.5);
 
 for predictor_idx in 1:num_predictors

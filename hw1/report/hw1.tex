@@ -77,8 +77,7 @@ The composition of each of the $N$ concrete samples is given by the concentratio
 \label{data_description_table}
 \end{table}%
 
-The concrete was stratified into $L=3$ classes\cite{b1}. This is, the concrete which is weak and not recommended for structures $L_1$, the \emph{Non-standard}. The concrete whose strength is in a range that can be applied to structures is classified as $L_2$, or \emph{Standard}. And the high performance concrete $L_3$, \emph{High-standard}.
-
+The concrete was stratified into $L=3$ classes\cite{b1}. The concrete which is weak and not recommended for structures, the \emph{Non-standard}, was labeled with $L_1$ and has 295 samples in it. The concrete whose strength is in a range that can be applied to structures is classified as $L_2$, or \emph{Standard}, and has 525 samples. The high performance concrete $L_3$, \emph{High-standard} and has 210 samples.
 The observations are the measured compressive strengths of each sample and, as the predictors $D_1 - D_7$, are continuous. The Age ($D_8$) of the concrete is extremely discrete.
 
 \section{Data analysis}\label{data_analysis}
@@ -109,7 +108,7 @@ The statistics of each predictor is obtained performing a mono-variate analysis.
 \label{statistics_table_alldataset}
 \end{table}%
 
-In Table~\ref{statistics_table_alldataset} it is possible to see that the data are not \emph{highly skewed}, but yet are needed to be normalised to zero mean and the unitary standard deviation. This can be easier shown in Figure~\ref{uncond_monovariate}.
+In Table~\ref{statistics_table_alldataset} it is possible to see that the data are not \emph{highly skewed} except by the Age data, discussed in the next section. This can be easier verified in Figure~\ref{uncond_monovariate}.
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=\columnwidth]{../figures/monovariate_histograms_allcategories}}
@@ -197,7 +196,7 @@ In the pairwise comparison of the predictors, only in $(D_4,D_5)$, the Superplas
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=\columnwidth]{../figures/bivariate_histograms_allclass}}
-\caption{Pairwise scatter plot of each concrete component.}
+\caption{Pairwise scatter plot of each concrete component. The color code is the same from Figure~\ref{classcond_monovariate}}
 \label{histogram_biplot}
 \end{figure}
 
@@ -229,7 +228,7 @@ In the Figure~\ref{pca_scatter_plot} is shown the projection of the original dat
 
 \section{Conclusion}\label{conclusions}
 
-The database of concrete is not easy to analyse if no knowledge about the problem of the mixture was studied. In none of the analysis the data have be shown as separable on the initially determined classes. The next step is to try to perform regression to model the compressive strength itself before trying to classify the samples.
+The database of concrete is not easy to analyse if there is no previous knowledge about the problem of the mixture. In none of the analysis the data have be shown as separable on the initially determined classes. The next step is to try to perform regression to model the compressive strength itself before trying to classify the samples.
 
 \begin{thebibliography}{00}
 \bibitem{b1} ACI Manual of Concrete Practice 2000, Part 1: Materials and General Properties of Concrete.  American Concrete Institute.  Farmington Hills, MI.
