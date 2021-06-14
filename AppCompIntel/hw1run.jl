@@ -135,19 +135,19 @@ standard      = concrete_projected_matrix[:, concrete_df[:, "Category"] .== 2]
 high_strength = concrete_projected_matrix[:, concrete_df[:, "Category"] .== 3]
 
 f4 = scatter(not_standard[1,:], not_standard[2,:], marker=:circle,linewidth=0, label="Not Standard", markerstrokecolor=:white, markerstrokewidth=0.5)
-f4 = scatter!(standard[1,:], standard[2,:], marker=:circle, linewidth=0, label="Standard", markerstrokecolor=:white, markerstrokewidth=0.5)
-f4 = scatter!(high_strength[1,:], high_strength[2,:], marker=:circle, linewidth=0, label="High Strength", markerstrokecolor=:white, markerstrokewidth=0.5)
-f4 = plot!(f4, xlabel="PC1", ylabel="PC2", legend=:topleft, legendfontsize = 6, framestyle = :box);
+f4 = scatter!(standard[1,:], standard[2,:], marker=:circle, linewidth=0, label="Standard", markerstrokecolor=:white, markerstrokewidth=0.5);
+f4 = scatter!(high_strength[1,:], high_strength[2,:], marker=:circle, linewidth=0, label="High Strength", markerstrokecolor=:white, markerstrokewidth=0.5);
+plot!(f4, xlabel="PC1", ylabel="PC2", legend=:topleft, legendfontsize = 6, framestyle = :box);
 
 for i in 1:num_predictors
     x = concrete_pca_projection_matrix[i,1]*2.
     y = concrete_pca_projection_matrix[i,2]*2.
-    f4 = plot!(f4, [0, x],[0, y],arrow=true,color=:white,linewidth=3,label=false)
-    f4 = plot!(f4, [0, x],[0, y],arrow=true,color=:black,linewidth=1.5,label=false)
-    annotate!(x * 1.25, y * 1.25, text(i, :black, 7, :bold), :black)
+    plot!(f4, [0, x],[0, y],arrow=true,color=:white,linewidth=3,label=false);
+    plot!(f4, [0, x],[0, y],arrow=true,color=:black,linewidth=1.5,label=false);
+    annotate!(x * 1.25, y * 1.25, text(i, :black, 7, :bold), :black);
 end
 
-f4 = plot!(f4, size=(500,350), dpi=150)
+plot!(f4, size=(500,350), dpi=150);
 
 !save_for_report ? display(f4) : savefig(f4,figure_path("pca_scatter_plot.pdf"));
 
@@ -156,3 +156,7 @@ f5 = plot(f5, size=(500,350), dpi=150);
 !save_for_report ? display(f5) : savefig(f5,figure_path("pca_variance.pdf"));
 
 println("\nFinished!")
+
+f_vars = ["f" "predictors_corr_matrix"; "f2" "monovariate_histograms_classcond"; "f3" "bivariate_histograms_allclass"; "f4" "pca_scatter_plot"; "f5" "pca_variance"];
+
+pretty_table(f_vars,title="Type 'display(<figure_variable>)' to display the wanted figure:"; header=["Variable", "Figure"])
