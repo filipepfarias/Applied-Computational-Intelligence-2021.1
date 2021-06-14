@@ -11,7 +11,7 @@ using MultivariateStats
 println("Running HW1");
 println("Loading Concrete dataset");
 
-save_for_report = true;
+save_for_report = false;
 
 concrete_df = CSV.File(eval(@__DIR__)*"/../data/Concrete_Data.csv") |> DataFrame;
 transform!(concrete_df, "Concrete compressive strength (MPa)" => ByRow(strength -> get_category(strength)) => "Category");
@@ -27,10 +27,19 @@ num_observations = nrow(concrete_df);
 
 println("Evaluating predictors statistics")
 
-predictors_statistics_df              = DataFrame()
-predictors_statistics_notstandard_df  = DataFrame()
-predictors_statistics_standard_df     = DataFrame()
-predictors_statistics_highstrength_df = DataFrame()
+predictors_statistics_df              = DataFrame();
+predictors_statistics_notstandard_df  = DataFrame();
+predictors_statistics_standard_df     = DataFrame();
+predictors_statistics_highstrength_df = DataFrame();
+
+pretty_table(predictors_statistics_df, title="Class Unconditional Predictors Statistics")
+# sleep(1.5);
+pretty_table(predictors_statistics_notstandard_df, title="Class 1 Predictors Statistics")
+# sleep(1.5);
+pretty_table(predictors_statistics_standard_df, title="Class 2 Predictors Statistics")
+# sleep(1.5);
+pretty_table(predictors_statistics_highstrength_df, title="Class 3 Predictors Statistics")
+# sleep(1.5);
 
 for predictor_idx in 1:num_predictors
     predictor_array = Array(concrete_df[:, predictor_idx])
@@ -55,14 +64,6 @@ for predictor_idx in 1:num_predictors
         DataFrame(mean = mean(predictor_array_highstrength), std = std(predictor_array_highstrength), gamma = skewness(predictor_array_highstrength))
         );
 end
-
-println("Class-unconditional predictors statistics");
-println(predictors_statistics_df)
-
-println("Class-unconditional predictors statistics");
-println(predictors_statistics_notstandard_df)
-println(predictors_statistics_standard_df)
-println(predictors_statistics_highstrength_df)
 
 println("Evaluating correlation matrix");
 predictors_corr_matrix = cor(concrete_matrix, concrete_matrix)
@@ -127,15 +128,19 @@ f4 = scatter!(high_strength[1,:], high_strength[2,:], marker=:circle, linewidth=
 f4 = plot!(f4, xlabel="PC1", ylabel="PC2", legend=:topleft, legendfontsize = 6, framestyle = :box);
 
 for i in 1:num_predictors
-    x = concrete_pca_projection_matrix[i,1]
-    y = concrete_pca_projection_matrix[i,2]
-    f4 = plot!(f4, [0, x],[0, y],arrow=true,color=:black,linewidth=1.5,label="")
-    annotate!(x * 1.15, y * 1.15, text(i, :black, 5), :black)
+    x = concrete_pca_projection_matrix[i,1]*2.
+    y = concrete_pca_projection_matrix[i,2]*2.
+    f4 = plot!(f4, [0, x],[0, y],arrow=true,color=:white,linewidth=3,label=false)
+    f4 = plot!(f4, [0, x],[0, y],arrow=true,color=:black,linewidth=1.5,label=false)
+    annotate!(x * 1.25, y * 1.25, text(i, :black, 7, :bold), :black)
 end
+
+f4 = plot(f4, size=(500,350), dpi=150)
 
 !save_for_report ? display(f4) : savefig(f4,figure_path("pca_scatter_plot.pdf"));
 
-f5 = plot((principalvars(concrete_pca) / tprincipalvar(concrete_pca)) * 100, xlabel=L"Principal~components", ylabel=L"Percentage~of~the~total~variance~(\%)", legend = false, framestyle = :box);
+f5 = plot((principalvars(concrete_pca) / tprincipalvar(concrete_pca)) * 100, xlabel="Principal components", ylabel="Percentage of the total variance (%)", legend = false, framestyle = :box, xticks=1:8);
+f5 = plot(f5, size=(500,350), dpi=150);
 !save_for_report ? display(f5) : savefig(f5,figure_path("pca_variance.pdf"));
 
 println("\nFinished!")
