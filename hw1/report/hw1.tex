@@ -73,7 +73,7 @@ The composition of each of the $N$ concrete samples is given by the concentratio
 \label{Data Description}
 \end{table}%
 
-\textcolor{red}{The concrete was stratified into $L=3$ classes.} This is, the concrete which is weak and not recommended for structures $L_1$, the \emph{Non-standard}. The concrete whose strength is in a range that can be applied to structures is classified as $L_2$, or \emph{Standard}. And the high performance concrete $L_3$, \emph{High-standard}.
+The concrete was stratified into $L=3$ classes\cite{b1}. This is, the concrete which is weak and not recommended for structures $L_1$, the \emph{Non-standard}. The concrete whose strength is in a range that can be applied to structures is classified as $L_2$, or \emph{Standard}. And the high performance concrete $L_3$, \emph{High-standard}.
 
 The observations $Y$ are the measured compressive strengths of each sample and, as the predictors $D_1 - D_7$, are continuous. The Age ($D_8$) of the concrete is extremely discrete.
 
@@ -148,6 +148,8 @@ The statistics of each predictor is at Table~[].
 
 How the PCs comprises the original variance is plotted on Figure~[]. The original predictors are projected onto the PCs space, Figure~[]. Note the first component, the cement $D_1$ has less information in the first two PCs components. An interesting fact about this is to know that the cement can even turns the concrete weaker to compression as long its concentration grows. The compression strength will be given by the aggregate and some chemicals, which are the predictors of major norm in the projection.
 
+In the Figure~[] is shown the projection of the original data onto de first two PCs. The classes are highly overlapping and another methods are needed to allow the classes to be separeted.
+
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=\columnwidth]{../figures/pca_scatter_plot}}
 \caption{Example of a figure caption.}
@@ -159,6 +161,10 @@ How the PCs comprises the original variance is plotted on Figure~[]. The origina
 \caption{Example of a figure caption.}
 %\label{fig}
 \end{figure}
+
+\section{Conclusion}
+
+The database of concrete is not easy to analyse if no knowledge about the problem of the mixture was studied. In none of the analysis the data have be shown as separable on the initially determined classes. The next step is to try to perform regression to model the compressive strength itself before trying to classify the samples.
 
 \begin{thebibliography}{00}
 \bibitem{b1} ``Different types of concrete grades and their uses'' \url{https://www.baseconcrete.co.uk/different-types-of-concrete-grades-and-their-uses/}. Accessed on 25/05/2021.
