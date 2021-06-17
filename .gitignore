@@ -4,7 +4,6 @@
 *.aux
 *.fdb_latexmk
 *.fls
-*.pdf
 *.out
 settings.json
 .ipynb_checkpoints
