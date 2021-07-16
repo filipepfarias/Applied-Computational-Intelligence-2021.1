@@ -46,7 +46,7 @@ concrete, compresive, strength, machine, learning, pre-processing
 \section{Introduction}
 A material formed by aggregates bonded together by a fluid material that hardens over time has been used by humans for construction since many years ago\cite{b3}. Nowadays this material is known as concrete and it's widely used in the construction field. The aggregates used in the concrete affect directly its compressive strength which highly impacts its applications. For instance, in general, the concrete for columns or beams needs to have a greater compressive strength than the one for pavement. On this paper, we carry out an statistical analysis on a dataset extracted from the UCI Machine Learning Repository (University of California, Irvine)\cite{b4} that collects information about the concentration of some aggregates used to form different types of concretes and their resulting compressive strenght. 
 
-This work is divided as follows. A description of the data is given in Section \ref{data_description}. The Section \ref{data_analysis} brings an unconditional and a class-conditional mono-variate analysis as well as unconditional bi-variate and multi-variate analysis of the data. Finally, the conclusions and considerations are exposed in Section \ref{conclusions}.
+This work is divided as follows. {\color{red}A description of the data is given in Section \ref{data_description}. The Section \ref{data_analysis} brings an unconditional and a class-conditional mono-variate analysis as well as unconditional bi-variate and multi-variate analysis of the data. Finally, the conclusions and considerations are exposed in Section }\ref{conclusions}.
 
 % This works tries to predict this compressive strength and to classify when the concrete is proper to be applied in structures.  In the UCI database the concrete is tested with different components concentrations and different curing time (ages). 
 
@@ -69,6 +69,7 @@ The composition of each of the $N$ concrete samples is given by the concentratio
     $D_6$ & Coarse Aggregate & kg/m\textsuperscript{3} \\ 
     $D_7$ & Fine Aggregate & kg/m\textsuperscript{3} \\ 
     $D_8$ & Age & days \\ 
+    $Y$ & Compressive strength & MPa \\ 
 	\midrule
     N & 1030 samples&  \\ 
     \bottomrule
@@ -78,15 +79,21 @@ The composition of each of the $N$ concrete samples is given by the concentratio
 \end{table}%
 
 The concrete was stratified into $L=3$ classes\cite{b1}. The concrete which is weak and not recommended for structures, the \emph{Non-standard}, was labeled with $L_1$ and has 295 samples in it. The concrete whose strength is in a range that can be applied to structures is classified as $L_2$, or \emph{Standard}, and has 525 samples. The high performance concrete $L_3$, \emph{High-strength} and has 210 samples.
-The observations are the measured compressive strengths of each sample and, as the predictors $D_1 - D_7$, are continuous. The Age ($D_8$) of the concrete is extremely discrete.
+The observations are the measured compressive strengths of each sample and, as the predictors $D_1 - D_7$, are continuous. The Age ($D_8$) of the concrete is extremely discrete. The output is the concrete strength 
 
-\section{Data analysis}\label{data_analysis}
+\section{Methods}\label{methods}
 
-In order to do future works, an analysis of the data is needed to understand them and perform their validation.
+Regression models try to find relations between the \emph{independent variables}, the predictors in this work, and the \emph{dependent variables}, the outcomes. These relations can occur in different forms, but the more common one is when a linear increase in one represents a linear increase in the other. Relations of this type are comprised by the \emph{Linear Regression}. 
 
-\subsection{Unconditional Mono-variate Analysis}
+\subsection{Ordinary Least Squares}
 
-The statistics of each predictor is obtained performing a mono-variate analysis. At this step is possible to verify how the data is distributed.
+\[
+\begin{aligned}
+Y &= \beta_0 + \beta_1 X
+\end{aligned}
+\]
+
+This method tries to find the linear regression between the predictors and outcomes by fitting a line through the data. The fitting is done by minimising a cost function defined by the squared distance between the data and the line to be fitted. The sum of the distances will be minimum in the best fit, what gives the name to the method.
 
 \begin{table}[htp]
 \caption{Statistics summary of the predictors}
