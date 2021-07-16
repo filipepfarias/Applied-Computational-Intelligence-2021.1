@@ -87,13 +87,29 @@ Regression models try to find relations between the \emph{independent variables}
 
 \subsection{Ordinary Least Squares}
 
-\[
-\begin{aligned}
-Y &= \beta_0 + \beta_1 X
-\end{aligned}
-\]
+\begin{align}
+Y &= \begin{bmatrix}
+\beta_0 \\ \beta_1
+\end{bmatrix}
+\begin{bmatrix}
+1 & X
+\end{bmatrix} + \varepsilon \\
+\begin{bmatrix}
+\hat{\beta}_0 \\ \hat{\beta}_1
+\end{bmatrix} &= \left( \begin{bmatrix}
+1 & X
+\end{bmatrix}^\top
+\begin{bmatrix}
+1 & X
+\end{bmatrix} \right)^{-1}
+\begin{bmatrix}
+1 & X
+\end{bmatrix}^\top Y
+\end{align} 
 
-This method tries to find the linear regression between the predictors and outcomes by fitting a line through the data. The fitting is done by minimising a cost function defined by the squared distance between the data and the line to be fitted. The sum of the distances will be minimum in the best fit, what gives the name to the method.
+This method tries to find the linear regression between the predictors and outcomes by fitting a line with linear coefficient $\beta_0$ and angular coefficient $\beta_1$, defined in (1), through the data. The fitting is done by minimising a cost function defined by the squared distance between the data and the line to be fitted. The sum of the distances will be minimum in the best fit, what gives the name to the method. This results in coefficients as in (2). Regard the fact that $\beta_1$ can be a vector of the size such as the number of predictors in $X$.
+
+An interesting fact to observe is if the predictors correlates with the outcome, we can observe the error will be small. This is because the correlation evaluates linear variations between the variables as such as the linear regression.
 
 \begin{table}[htp]
 \caption{Statistics summary of the predictors}
