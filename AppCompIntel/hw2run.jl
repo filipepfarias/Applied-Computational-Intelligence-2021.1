@@ -1,6 +1,5 @@
-# using Core: Matrix
-using Pkg
-Pkg.activate(".")
+# using Pkg
+# Pkg.activate(".")
 
 using Revise
 using AppCompIntel 
@@ -44,6 +43,7 @@ concrete_matrix = (concrete_matrix .- mean(concrete_matrix, dims=1)) ./ std(conc
 #     xrotation=20,framestyle=:box,clim=(-1,1),color=:balance,aspect_ratio=:equal);
 # !save_for_report ? display(f) : savefig(f,figure_path("predictors_corr_matrix.pdf"));
 
+results = DataFrame(["Fold" => [], "RMSE" => [], "R^2" => []]);
 
 train_matrix = Matrix{Float64}(train_df[:,1:end-1]);
 train_matrix = (train_matrix .- mean(train_matrix, dims=1)) ./ std(train_matrix, dims=1);
@@ -67,8 +67,8 @@ train_rss = sum((train_outcome .- train_outcome_prediction).^2)
 train_tss = sum((train_outcome .- mean(train_outcome)).^2)
 train_r2 = 1 - train_rss / train_tss
 
-print("train_rmse = $train_rmse")
-print("\ntrain_r2 = $train_r2\n")
+# print("train_rmse = $train_rmse")
+# print("\ntrain_r2 = $train_r2\n")
 
 # do prediction in test
 test_outcome_prediction = test_predictors * train_coefficients[1:end-1] .+ train_coefficients[end]
@@ -79,8 +79,9 @@ test_rss = sum((test_outcome .- test_outcome_prediction).^2)
 test_tss = sum((test_outcome .- mean(test_outcome)).^2)
 test_r2 = 1 - test_rss / test_tss
 
-print("\ntest_rmse = $test_rmse")
-print("\ntest_r2 = $test_r2\n")
+push!(results,["70% Train / 30% Test" test_rmse test_r2]);
+# print("\ntest_rmse = $test_rmse")
+# print("\ntest_r2 = $test_r2\n")
 
 for k in [1, 2, 3, 4, 5]
     (kfold_train, kfold_test) = concrete_folds[k]
@@ -110,10 +111,18 @@ for k in [1, 2, 3, 4, 5]
     kfold_test_tss = sum((kfold_test_outcome .- mean(kfold_test_outcome)).^2)
     kfold_test_r2 = 1 - kfold_test_rss / kfold_test_tss
 
-    print("\nkfold run number $k")
-    print("\nkfold_train_rmse = $kfold_train_rmse")
-    print("\nkfold_train_r2 = $kfold_train_r2\n")
+    # print("\nkfold run number $k")
+    # print("\nkfold_train_rmse = $kfold_train_rmse")
+    # print("\nkfold_train_r2 = $kfold_train_r2\n")
 
-    print("\nkfold_test_rmse = $kfold_test_rmse")
-    print("\nkfold_test_r2 = $kfold_test_r2\n\n")
+    # print("\nkfold_test_rmse = $kfold_test_rmse")
+    # print("\nkfold_test_r2 = $kfold_test_r2\n\n")
+    push!(results,[string(k)*"-fold" kfold_test_rmse kfold_test_r2])
 end
+h1 = Highlighter((data,i,j)->(data[i,j] == findmin(data[:, 2])[1]),
+                         bold       = true,
+                         foreground = :cyan);
+h2 = Highlighter((data,i,j)->(data[i,j] == findmin(data[:, 3])[1]),
+                         bold       = true,
+                         foreground = :cyan);
+pretty_table(results,highlighters = (h1, h2))
