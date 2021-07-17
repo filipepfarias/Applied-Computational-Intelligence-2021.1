@@ -1,3 +1,4 @@
+using Revise: push!
 # using Pkg
 # Pkg.activate(".")
 
@@ -56,7 +57,7 @@ test_predictors = test_matrix[:, 1:end-1];
 test_outcome = test_matrix[:, end];
 
 # solve using llsq
-train_coefficients = llsq(train_predictors, train_outcome;)
+train_coefficients = llsq(train_predictors, train_outcome)
 
 # do prediction
 train_outcome_prediction = train_predictors * train_coefficients[1:end-1] .+ train_coefficients[end]
@@ -66,9 +67,6 @@ train_rmse = sqrt(mean(abs2.(train_outcome .- train_outcome_prediction)))
 train_rss = sum((train_outcome .- train_outcome_prediction).^2)
 train_tss = sum((train_outcome .- mean(train_outcome)).^2)
 train_r2 = 1 - train_rss / train_tss
-
-# print("train_rmse = $train_rmse")
-# print("\ntrain_r2 = $train_r2\n")
 
 # do prediction in test
 test_outcome_prediction = test_predictors * train_coefficients[1:end-1] .+ train_coefficients[end]
@@ -80,8 +78,6 @@ test_tss = sum((test_outcome .- mean(test_outcome)).^2)
 test_r2 = 1 - test_rss / test_tss
 
 push!(results,["70% Train / 30% Test" test_rmse test_r2]);
-# print("\ntest_rmse = $test_rmse")
-# print("\ntest_r2 = $test_r2\n")
 
 for k in [1, 2, 3, 4, 5]
     (kfold_train, kfold_test) = concrete_folds[k]
@@ -98,10 +94,10 @@ for k in [1, 2, 3, 4, 5]
     # do prediction train
     kfold_train_outcome_prediction = kfold_train_predictors * kfold_train_coefficients[1:end-1] .+ kfold_train_coefficients[end]
     # measure the error
-    kfold_train_rmse = sqrt(mean(abs2.(kfold_train_outcome .- kfold_train_outcome_prediction)))
-    kfold_train_rss = sum((kfold_train_outcome .- kfold_train_outcome_prediction).^2)
-    kfold_train_tss = sum((kfold_train_outcome .- mean(kfold_train_outcome)).^2)
-    kfold_train_r2 = 1 - kfold_train_rss / kfold_train_tss
+    # kfold_train_rmse = sqrt(mean(abs2.(kfold_train_outcome .- kfold_train_outcome_prediction)))
+    # kfold_train_rss = sum((kfold_train_outcome .- kfold_train_outcome_prediction).^2)
+    # kfold_train_tss = sum((kfold_train_outcome .- mean(kfold_train_outcome)).^2)
+    # kfold_train_r2 = 1 - kfold_train_rss / kfold_train_tss
 
     # do prediction train
     kfold_test_outcome_prediction = kfold_test_predictors * kfold_train_coefficients[1:end-1] .+ kfold_train_coefficients[end]
@@ -119,10 +115,97 @@ for k in [1, 2, 3, 4, 5]
     # print("\nkfold_test_r2 = $kfold_test_r2\n\n")
     push!(results,[string(k)*"-fold" kfold_test_rmse kfold_test_r2])
 end
+
 h1 = Highlighter((data,i,j)->(data[i,j] == findmin(data[:, 2])[1]),
                          bold       = true,
                          foreground = :cyan);
 h2 = Highlighter((data,i,j)->(data[i,j] == findmin(data[:, 3])[1]),
                          bold       = true,
                          foreground = :cyan);
-pretty_table(results,highlighters = (h1, h2))
+pretty_table(results,highlighters = (h1, h2),title="Least Squares Regression")
+
+results = DataFrame(["Fold" => [], "RMSE" => [], "R^2" => []]);
+# solve using ridge
+# do prediction
+λ = exp.(-100:1:100)
+log_train_rmse = [];
+for λ in exp.(-100:1:100)
+    train_coefficients = ridge(train_predictors, train_outcome,λ)
+    train_outcome_prediction = [train_predictors ones(size(train_predictors)[1],1)]*train_coefficients
+    train_rmse = sqrt(mean(abs2.(train_outcome .- train_outcome_prediction)))
+    push!(log_train_rmse,train_rmse)
+end
+
+# find the minimal error for λ
+(_,id) = findmin(log_train_rmse)
+λ = λ[id]
+train_coefficients = ridge(train_predictors, train_outcome,λi)
+
+# measure the error
+train_rmse = sqrt(mean(abs2.(train_outcome .- train_outcome_prediction)))
+train_rss = sum((train_outcome .- train_outcome_prediction).^2)
+train_tss = sum((train_outcome .- mean(train_outcome)).^2)
+train_r2 = 1 - train_rss / train_tss
+
+# do prediction in test
+test_outcome_prediction = test_predictors * train_coefficients[1:end-1] .+ train_coefficients[end]
+
+# measure the error
+test_rmse = sqrt(mean(abs2.(test_outcome .- test_outcome_prediction)))
+test_rss = sum((test_outcome .- test_outcome_prediction).^2)
+test_tss = sum((test_outcome .- mean(test_outcome)).^2)
+test_r2 = 1 - test_rss / test_tss
+
+push!(results,["70% Train / 30% Test" test_rmse test_r2]);
+
+for k in [1, 2, 3, 4, 5]
+    (kfold_train, kfold_test) = concrete_folds[k]
+    kfold_train = Matrix{Float64}(kfold_train)
+    kfold_train_predictors = kfold_train[:, 1:end-1]
+    kfold_train_outcome = kfold_train[:, end]
+
+    kfold_test =  Matrix{Float64}(kfold_test)
+    kfold_test_predictors = kfold_test[:, 1:end-1]
+    kfold_test_outcome = kfold_test[:, end]
+
+    # solve using ridge
+    λ = exp.(-100:1:100)
+    log_train_rmse = [];
+    for λi in exp.(-100:1:100)
+        kfold_train_coefficients = ridge(kfold_train_predictors, kfold_train_predictors,λi)
+        kfold_train_outcome_prediction = [kfold_train_predictors ones(size(kfold_train_predictors)[1],1)]*kfold_train_coefficients
+        train_rmse = sqrt(mean(abs2.(kfold_train_predictors .- kfold_train_outcome_prediction)))
+        push!(log_train_rmse,train_rmse)
+    end
+
+    # find the minimal error for λ
+    (_,id) = findmin(log_train_rmse)
+    λ = λ[id]
+    kfold_train_coefficients = ridge(kfold_train_predictors, kfold_train_outcome,λi)
+
+    # do prediction train
+    kfold_train_outcome_prediction = kfold_train_predictors * kfold_train_coefficients[1:end-1] .+ kfold_train_coefficients[end]
+    # measure the error
+    # kfold_train_rmse = sqrt(mean(abs2.(kfold_train_outcome .- kfold_train_outcome_prediction)))
+    # kfold_train_rss = sum((kfold_train_outcome .- kfold_train_outcome_prediction).^2)
+    # kfold_train_tss = sum((kfold_train_outcome .- mean(kfold_train_outcome)).^2)
+    # kfold_train_r2 = 1 - kfold_train_rss / kfold_train_tss
+
+    # do prediction train
+    kfold_test_outcome_prediction = kfold_test_predictors * kfold_train_coefficients[1:end-1] .+ kfold_train_coefficients[end]
+    # measure the error
+    kfold_test_rmse = sqrt(mean(abs2.(kfold_test_outcome .- kfold_test_outcome_prediction)))
+    kfold_test_rss = sum((kfold_test_outcome .- kfold_test_outcome_prediction).^2)
+    kfold_test_tss = sum((kfold_test_outcome .- mean(kfold_test_outcome)).^2)
+    kfold_test_r2 = 1 - kfold_test_rss / kfold_test_tss
+
+    push!(results,[string(k)*"-fold" kfold_test_rmse kfold_test_r2])
+end
+
+h1 = Highlighter((data,i,j)->(data[i,j] == findmin(data[:, 2])[1]),
+                         bold       = true,
+                         foreground = :cyan);
+h2 = Highlighter((data,i,j)->(data[i,j] == findmin(data[:, 3])[1]),
+                         bold       = true,
+                         foreground = :cyan);
+pretty_table(results,highlighters = (h1, h2),title="Ridge Regression")
