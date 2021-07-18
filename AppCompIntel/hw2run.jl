@@ -123,70 +123,96 @@ h2 = Highlighter((data,i,j)->(data[i,j] == findmax(data[:, 3])[1]),
 y, X = unpack(concrete_df, ==(:Concrete_Compressive_Strength), !=(:Category))
 
 # Normalizing data
-X = StatsBase.transform(StatsBase.fit(ZScoreTransform, Matrix(X); dims = 1),Matrix(X));
-y = StatsBase.transform(StatsBase.fit(ZScoreTransform, y; dims = 1),y);
+mapcols!(col -> (col .- mean(col))/std(col),X);
+y = mapslices(col -> (col .- mean(col))/std(col),y; dims=1);
 
 # Implementing R² Statistics
 R²(ŷ, y) = 1 - sum((y.-ŷ).^2)/sum((y.-mean(y)).^2)
 
-# # Import Linear Regression
-# LinearRegressor = @load LinearRegressor pkg=MLJLinearModels verbosity=0
+# Import Linear Regression
+LinearRegressor = @load LinearRegressor pkg=MLJLinearModels verbosity=0
 
-# # Pipeline: Data is standardized and then goes through the linear regression
-# model = LinearRegressor(
-#         fit_intercept = true,
-#         solver = nothing);
+# Pipeline: Data is standardized and then goes through the linear regression
+model_lr = LinearRegressor(
+        fit_intercept = true,
+        solver = nothing);
 
-# # Wraps model, predictor and outcome
-# model_machine = machine(model, X, y);
+# Wraps model, predictor and outcome
+model_lr_machine = machine(model_lr, X, y);
 
-# # Evaluate model performance for train set equals 70% of the total
-# model_summary_70 = evaluate!(
-#     model_machine,
-#     resampling=Holdout(fraction_train=0.5, rng=22),
-#     measure=[rmse, R²],
-#     verbosity=0);
+# Evaluate model performance for train set equals 70% of the total
+model_lr_summary_70 = evaluate!(
+    model_lr_machine,
+    resampling=Holdout(fraction_train=0.5, rng=22),
+    measure=[rmse, R²],
+    verbosity=0);
 
-# push!(results,[
-#     "70% Train / 30% Test" model_summary_70.measurement[1] model_summary_70.measurement[2]
-#     ]);
+push!(results,[
+    "70% Train / 30% Test" model_lr_summary_70.measurement[1] model_lr_summary_70.measurement[2]
+    ]);
 
-# model_summary_kfolds = evaluate!(
-#     model_machine,
-#     resampling=CV(nfolds=5, rng=443),
-#     measure=[rmse, R²],
-#     verbosity=0);
+# Evaluate model performance for 5-folds
+model_lr_summary_kfolds = evaluate!(
+    model_lr_machine,
+    resampling=CV(nfolds=5, rng=443),
+    measure=[rmse, R²],
+    verbosity=0);
 
-# append!(results,
-#     DataFrame(
-#         "CV" => string.([1; 2; 3; 4; 5]).*"-th fold",
-#         "RMSE" =>  model_summary_kfolds.per_fold[1],
-#         "R²" => model_summary_kfolds.per_fold[2]
-#     ));
+append!(results,
+    DataFrame(
+        "CV" => string.([1; 2; 3; 4; 5]).*"-th fold",
+        "RMSE" =>  model_lr_summary_kfolds.per_fold[1],
+        "R²" => model_lr_summary_kfolds.per_fold[2]
+    ));
 
-# pretty_table(results,highlighters = (h1, h2),title="OLS Linear Regression")
+pretty_table(results,highlighters = (h1, h2),title="OLS Linear Regression")
 
-println("\nRunning L²-penalised Linear (Ridge) Regression");
+# Ridge Regression
+println("\nRunning L²-penalised Linear (Ridge) Regression\n");
+
 results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
 
 RidgeRegressor = @load RidgeRegressor pkg=MLJLinearModels verbosity=0
 
-model = RidgeRegressor(
+model_rr = RidgeRegressor(
         fit_intercept = true,
         solver = nothing);
 
-r = range(model, :lambda, lower=1e-2, upper=100_000, scale=:log10);
+r = range(model_rr, :lambda, lower=1e-2, upper=100_000, scale=:log10);
 
-tuned_model = TunedModel(
-    model=model, 
+tuned_model_rr = TunedModel(
+    model=model_rr, 
     ranges=r, 
     tuning=Grid(resolution=50),
     resampling=CV(nfolds=5, rng=4141), 
     measure=rmse)
+   
+# Wraps model, predictor and outcome
+model_rr_machine = machine(tuned_model_rr, X, y);
 
-model_machine = machine(tuned_model, X, y);
-
-model_summary = evaluate!(
-    model_machine,
+# Evaluate model performance for train set equals 70% of the total
+mode_rr_summary_70 = evaluate!(
+    model_rr_machine,
+    resampling=Holdout(fraction_train=0.7, rng=22),
     measure=[rmse, R²],
     verbosity=0);
+
+push!(results,[
+    "70% Train / 30% Test" mode_rr_summary_70.measurement[1] mode_rr_summary_70.measurement[2]
+    ]);
+
+# Evaluate model performance for 5-folds
+model_rr_summary_kfolds = evaluate!(
+    model_rr_machine,
+    resampling=CV(nfolds=5, rng=22),
+    measure=[rmse, R²],
+    verbosity=0);
+
+append!(results,
+    DataFrame(
+        "CV" => string.([1; 2; 3; 4; 5]).*"-th fold",
+        "RMSE" =>  model_rr_summary_kfolds.per_fold[1],
+        "R²" => model_rr_summary_kfolds.per_fold[2]
+    ));
+
+pretty_table(results,highlighters = (h1, h2),title="Ridge Regression")
