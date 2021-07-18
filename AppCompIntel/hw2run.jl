@@ -1,4 +1,3 @@
-using Revise: push!
 # using Pkg
 # Pkg.activate(".")
 
@@ -7,115 +6,21 @@ using AppCompIntel
 using CSV
 using DataFrames
 using PrettyTables
-using Statistics, StatsBase, StatsPlots
+using Statistics, StatsBase
 using Plots
 using Latexify, LaTeXStrings
 using MultivariateStats
-using MLDataUtils
+using MLJ
 
 println("\nRunning HW2");
-println("\nLoading Concrete dataset\n");
+println("\nLoading Concrete dataset");
 
 save_for_report = false;
 
 concrete_df = CSV.File(eval(@__DIR__)*"/data/Concrete_Data.csv", normalizenames=true) |> DataFrame;
 transform!(concrete_df, "Concrete_Compressive_Strength" => ByRow(strength -> get_category(strength)) => "Category");
-train_df, test_df = splitobs(shuffleobs(concrete_df), at = 0.7)
-concrete_folds = kfolds(concrete_df, k = 5)
 
-strength_categories = Array(["Non-standard", "Standard", "High strength"]);
-predictors_outcome_names = Array([L"D_1", L"D_2", L"D_3", L"D_4", L"D_5", L"D_6", L"D_7", L"D_8", L"Y"]);
-
-num_predictors   = length(predictors_outcome_names) - 1;
-num_categories   = length(strength_categories);
-num_observations = nrow(concrete_df);
-num_train_observations = nrow(train_df);
-num_test_observations = nrow(test_df);
-
-concrete_matrix = Matrix{Float64}(concrete_df[:,1:end-1]);
-concrete_matrix = (concrete_matrix .- mean(concrete_matrix, dims=1)) ./ std(concrete_matrix, dims=1);
-
-# pyplot()
-
-# println("\nEvaluating correlation matrix\n");
-# predictors_corr_matrix = cor(concrete_matrix, concrete_matrix)
-
-# f = heatmap(predictors_outcome_names, predictors_outcome_names, predictors_corr_matrix, 
-#     xrotation=20,framestyle=:box,clim=(-1,1),color=:balance,aspect_ratio=:equal);
-# !save_for_report ? display(f) : savefig(f,figure_path("predictors_corr_matrix.pdf"));
-
-results = DataFrame(["Fold" => [], "RMSE" => [], "R^2" => []]);
-
-train_matrix = Matrix{Float64}(train_df[:,1:end-1]);
-train_matrix = (train_matrix .- mean(train_matrix, dims=1)) ./ std(train_matrix, dims=1);
-train_predictors = train_matrix[:, 1:end-1];
-train_outcome = train_matrix[:, end];
-
-test_matrix = Matrix{Float64}(test_df[:,1:end-1]);
-test_matrix = (test_matrix .- mean(test_matrix, dims=1)) ./ std(test_matrix, dims=1)
-test_predictors = test_matrix[:, 1:end-1];
-test_outcome = test_matrix[:, end];
-
-# solve using llsq
-train_coefficients = llsq(train_predictors, train_outcome)
-
-# do prediction
-train_outcome_prediction = train_predictors * train_coefficients[1:end-1] .+ train_coefficients[end]
-
-# measure the error
-train_rmse = sqrt(mean(abs2.(train_outcome .- train_outcome_prediction)))
-train_rss = sum((train_outcome .- train_outcome_prediction).^2)
-train_tss = sum((train_outcome .- mean(train_outcome)).^2)
-train_r2 = 1 - train_rss / train_tss
-
-# do prediction in test
-test_outcome_prediction = test_predictors * train_coefficients[1:end-1] .+ train_coefficients[end]
-
-# measure the error
-test_rmse = sqrt(mean(abs2.(test_outcome .- test_outcome_prediction)))
-test_rss = sum((test_outcome .- test_outcome_prediction).^2)
-test_tss = sum((test_outcome .- mean(test_outcome)).^2)
-test_r2 = 1 - test_rss / test_tss
-
-push!(results,["70% Train / 30% Test" test_rmse test_r2]);
-
-for k in [1, 2, 3, 4, 5]
-    (kfold_train, kfold_test) = concrete_folds[k]
-    kfold_train = Matrix{Float64}(kfold_train)
-    kfold_train_predictors = kfold_train[:, 1:end-1]
-    kfold_train_outcome = kfold_train[:, end]
-
-    kfold_test =  Matrix{Float64}(kfold_test)
-    kfold_test_predictors = kfold_test[:, 1:end-1]
-    kfold_test_outcome = kfold_test[:, end]
-
-    # solve using llsq
-    kfold_train_coefficients = llsq(kfold_train_predictors, kfold_train_outcome)
-    # do prediction train
-    kfold_train_outcome_prediction = kfold_train_predictors * kfold_train_coefficients[1:end-1] .+ kfold_train_coefficients[end]
-    # measure the error
-    # kfold_train_rmse = sqrt(mean(abs2.(kfold_train_outcome .- kfold_train_outcome_prediction)))
-    # kfold_train_rss = sum((kfold_train_outcome .- kfold_train_outcome_prediction).^2)
-    # kfold_train_tss = sum((kfold_train_outcome .- mean(kfold_train_outcome)).^2)
-    # kfold_train_r2 = 1 - kfold_train_rss / kfold_train_tss
-
-    # do prediction train
-    kfold_test_outcome_prediction = kfold_test_predictors * kfold_train_coefficients[1:end-1] .+ kfold_train_coefficients[end]
-    # measure the error
-    kfold_test_rmse = sqrt(mean(abs2.(kfold_test_outcome .- kfold_test_outcome_prediction)))
-    kfold_test_rss = sum((kfold_test_outcome .- kfold_test_outcome_prediction).^2)
-    kfold_test_tss = sum((kfold_test_outcome .- mean(kfold_test_outcome)).^2)
-    kfold_test_r2 = 1 - kfold_test_rss / kfold_test_tss
-
-    # print("\nkfold run number $k")
-    # print("\nkfold_train_rmse = $kfold_train_rmse")
-    # print("\nkfold_train_r2 = $kfold_train_r2\n")
-
-    # print("\nkfold_test_rmse = $kfold_test_rmse")
-    # print("\nkfold_test_r2 = $kfold_test_r2\n\n")
-    push!(results,[string(k)*"-fold" kfold_test_rmse kfold_test_r2])
-end
-
+<<<<<<< HEAD
 h1 = Highlighter((data,i,j)->(data[i,j] == findmin(data[:, 2])[1]),
                          bold       = true,
                          foreground = :cyan);
@@ -201,11 +106,64 @@ for k in [1, 2, 3, 4, 5]
 
     push!(results,[string(k)*"-fold" kfold_test_rmse kfold_test_r2])
 end
+=======
+println("\nRunning OLS Linear Regression");
+
+results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
+>>>>>>> 3cfc724... OLS with MLJ implemented
 
 h1 = Highlighter((data,i,j)->(data[i,j] == findmin(data[:, 2])[1]),
                          bold       = true,
                          foreground = :cyan);
-h2 = Highlighter((data,i,j)->(data[i,j] == findmin(data[:, 3])[1]),
+h2 = Highlighter((data,i,j)->(data[i,j] == findmax(data[:, 3])[1]),
                          bold       = true,
-                         foreground = :cyan);
-pretty_table(results,highlighters = (h1, h2),title="Ridge Regression")
+                         foreground = :cyan); 
+
+# Ingesting data
+y, X = unpack(concrete_df, ==(:Concrete_Compressive_Strength), !=(:Category))
+
+# Normalizing data
+X = StatsBase.transform(StatsBase.fit(ZScoreTransform, Matrix(X); dims = 1),Matrix(X));
+y = StatsBase.transform(StatsBase.fit(ZScoreTransform, y; dims = 1),y);
+
+# Implementing R² Statistics
+R²(ŷ, y) = 1 - sum((y.-ŷ).^2)/sum((y.-mean(y)).^2)
+
+# Import Linear Regression
+LinearRegressor = @load LinearRegressor pkg=MLJLinearModels verbosity=0
+
+# Pipeline: Data is standardized and then goes through the linear regression
+model = @pipeline(
+    LinearRegressor(
+        fit_intercept = true,
+        solver = nothing)
+        );
+
+# Wraps model, predictor and outcome
+model_machine = machine(model, X, y);
+
+# Evaluate model performance for train set equals 70% of the total
+model_summary_70 = evaluate!(
+    model_machine,
+    resampling=Holdout(fraction_train=0.5, rng=22),
+    measure=[rmse, R²],
+    verbosity=0);
+
+push!(results,[
+    "70% Train / 30% Test" model_summary_70.measurement[1] model_summary_70.measurement[2]
+    ]);
+
+model_summary_kfolds = evaluate!(
+    model_machine,
+    resampling=CV(nfolds=5, rng=443),
+    measure=[rmse, R²],
+    verbosity=0);
+
+append!(results,
+    DataFrame(
+        "CV" => string.([1; 2; 3; 4; 5]).*"-th fold",
+        "RMSE" =>  model_summary_kfolds.per_fold[1],
+        "R²" => model_summary_kfolds.per_fold[2]
+    ));
+  
+pretty_table(results,highlighters = (h1, h2),title="OLS Linear Regression")
