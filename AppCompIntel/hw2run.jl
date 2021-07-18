@@ -113,11 +113,11 @@ results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
 >>>>>>> 3cfc724... OLS with MLJ implemented
 
 h1 = Highlighter((data,i,j)->(data[i,j] == findmin(data[:, 2])[1]),
-                         bold       = true,
-                         foreground = :cyan);
+                        bold       = true,
+                        foreground = :cyan);
 h2 = Highlighter((data,i,j)->(data[i,j] == findmax(data[:, 3])[1]),
-                         bold       = true,
-                         foreground = :cyan); 
+                        bold       = true,
+                        foreground = :cyan); 
 
 # Ingesting data
 y, X = unpack(concrete_df, ==(:Concrete_Compressive_Strength), !=(:Category))
@@ -129,41 +129,64 @@ y = StatsBase.transform(StatsBase.fit(ZScoreTransform, y; dims = 1),y);
 # Implementing R² Statistics
 R²(ŷ, y) = 1 - sum((y.-ŷ).^2)/sum((y.-mean(y)).^2)
 
-# Import Linear Regression
-LinearRegressor = @load LinearRegressor pkg=MLJLinearModels verbosity=0
+# # Import Linear Regression
+# LinearRegressor = @load LinearRegressor pkg=MLJLinearModels verbosity=0
 
-# Pipeline: Data is standardized and then goes through the linear regression
-model = @pipeline(
-    LinearRegressor(
+# # Pipeline: Data is standardized and then goes through the linear regression
+# model = LinearRegressor(
+#         fit_intercept = true,
+#         solver = nothing);
+
+# # Wraps model, predictor and outcome
+# model_machine = machine(model, X, y);
+
+# # Evaluate model performance for train set equals 70% of the total
+# model_summary_70 = evaluate!(
+#     model_machine,
+#     resampling=Holdout(fraction_train=0.5, rng=22),
+#     measure=[rmse, R²],
+#     verbosity=0);
+
+# push!(results,[
+#     "70% Train / 30% Test" model_summary_70.measurement[1] model_summary_70.measurement[2]
+#     ]);
+
+# model_summary_kfolds = evaluate!(
+#     model_machine,
+#     resampling=CV(nfolds=5, rng=443),
+#     measure=[rmse, R²],
+#     verbosity=0);
+
+# append!(results,
+#     DataFrame(
+#         "CV" => string.([1; 2; 3; 4; 5]).*"-th fold",
+#         "RMSE" =>  model_summary_kfolds.per_fold[1],
+#         "R²" => model_summary_kfolds.per_fold[2]
+#     ));
+
+# pretty_table(results,highlighters = (h1, h2),title="OLS Linear Regression")
+
+println("\nRunning L²-penalised Linear (Ridge) Regression");
+results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
+
+RidgeRegressor = @load RidgeRegressor pkg=MLJLinearModels verbosity=0
+
+model = RidgeRegressor(
         fit_intercept = true,
-        solver = nothing)
-        );
+        solver = nothing);
 
-# Wraps model, predictor and outcome
-model_machine = machine(model, X, y);
+r = range(model, :lambda, lower=1e-2, upper=100_000, scale=:log10);
 
-# Evaluate model performance for train set equals 70% of the total
-model_summary_70 = evaluate!(
+tuned_model = TunedModel(
+    model=model, 
+    ranges=r, 
+    tuning=Grid(resolution=50),
+    resampling=CV(nfolds=5, rng=4141), 
+    measure=rmse)
+
+model_machine = machine(tuned_model, X, y);
+
+model_summary = evaluate!(
     model_machine,
-    resampling=Holdout(fraction_train=0.5, rng=22),
     measure=[rmse, R²],
     verbosity=0);
-
-push!(results,[
-    "70% Train / 30% Test" model_summary_70.measurement[1] model_summary_70.measurement[2]
-    ]);
-
-model_summary_kfolds = evaluate!(
-    model_machine,
-    resampling=CV(nfolds=5, rng=443),
-    measure=[rmse, R²],
-    verbosity=0);
-
-append!(results,
-    DataFrame(
-        "CV" => string.([1; 2; 3; 4; 5]).*"-th fold",
-        "RMSE" =>  model_summary_kfolds.per_fold[1],
-        "R²" => model_summary_kfolds.per_fold[2]
-    ));
-  
-pretty_table(results,highlighters = (h1, h2),title="OLS Linear Regression")
