@@ -154,7 +154,7 @@ push!(results,[
 # Evaluate model performance for 5-folds
 model_lr_summary_kfolds = evaluate!(
     model_lr_machine,
-    resampling=CV(nfolds=5, rng=443),
+    resampling=CV(nfolds=5, rng=930),
     measure=[rmse, R²],
     verbosity=0);
 
@@ -184,27 +184,27 @@ tuned_model_rr = TunedModel(
     model=model_rr, 
     ranges=r, 
     tuning=Grid(resolution=50),
-    resampling=CV(nfolds=5, rng=4141), 
+    resampling=CV(nfolds=5, rng=930), 
     measure=rmse)
    
 # Wraps model, predictor and outcome
 model_rr_machine = machine(tuned_model_rr, X, y);
 
 # Evaluate model performance for train set equals 70% of the total
-mode_rr_summary_70 = evaluate!(
+model_rr_summary_70 = evaluate!(
     model_rr_machine,
-    resampling=Holdout(fraction_train=0.7, rng=22),
+    resampling=Holdout(fraction_train=0.7, rng=930),
     measure=[rmse, R²],
     verbosity=0);
 
 push!(results,[
-    "70% Train / 30% Test" mode_rr_summary_70.measurement[1] mode_rr_summary_70.measurement[2]
+    "70% Train / 30% Test" model_rr_summary_70.measurement[1] model_rr_summary_70.measurement[2]
     ]);
 
 # Evaluate model performance for 5-folds
 model_rr_summary_kfolds = evaluate!(
     model_rr_machine,
-    resampling=CV(nfolds=5, rng=22),
+    resampling=CV(nfolds=5, rng=930),
     measure=[rmse, R²],
     verbosity=0);
 
@@ -216,3 +216,50 @@ append!(results,
     ));
 
 pretty_table(results,highlighters = (h1, h2),title="Ridge Regression")
+
+# PLS model
+println("\nRunning Partial Least Squares Regression\n");
+
+results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
+
+PLSRegressor = @load PLSRegressor pkg=PartialLeastSquaresRegressor verbosity=0
+
+model_pls = PLSRegressor();
+
+r = range(model_pls, :n_factors, lower=1, upper=8, scale=:linear);
+
+tuned_model_pls = TunedModel(
+    model=model_pls, 
+    ranges=r, 
+    tuning=Grid(resolution=8),
+    resampling=CV(nfolds=5, rng=930), 
+    measure=rmse);
+
+# Wraps model, predictor and outcome
+model_pls_machine = machine(tuned_model_pls, X, y);
+
+# Evaluate model performance for train set equals 70% of the total
+model_pls_summary_70 = evaluate!(
+    model_pls_machine,
+    resampling=Holdout(fraction_train=0.7, rng=930),
+    measure=[rmse, R²],
+    verbosity=0);
+
+push!(results,[
+    "70% Train / 30% Test" model_pls_summary_70.measurement[1] model_pls_summary_70.measurement[2]
+    ]);
+
+model_pls_summary_kfolds = evaluate!(
+    model_pls_machine,
+    resampling=CV(nfolds=5, rng=930),
+    measure=[rmse, R²],
+    verbosity=0);
+
+append!(results,
+    DataFrame(
+        "CV" => string.([1; 2; 3; 4; 5]).*"-th fold",
+        "RMSE" =>  model_pls_summary_kfolds.per_fold[1],
+        "R²" => model_pls_summary_kfolds.per_fold[2]
+    ));
+
+pretty_table(results,highlighters = (h1, h2),title="\nPLS Regression")
