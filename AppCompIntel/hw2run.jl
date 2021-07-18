@@ -77,7 +77,7 @@ append!(results,
         "R²" => model_lr_summary_kfolds.per_fold[2]
     ));
 
-pretty_table(results,highlighters = (h1, h2),title="OLS Linear Regression")
+pretty_table(results,highlighters = (h1, h2),title="OLS Linear Regression", crop = :none)
 
 # Ridge Regression
 println("\nRunning L²-penalised Linear (Ridge) Regression\n");
@@ -127,7 +127,7 @@ append!(results,
         "R²" => model_rr_summary_kfolds.per_fold[2]
     ));
 
-pretty_table(results,highlighters = (h1, h2),title="Ridge Regression")
+pretty_table(results,highlighters = (h1, h2),title="Ridge Regression", crop = :none)
 
 # PLS model
 println("\nRunning Partial Least Squares Regression\n");
@@ -174,4 +174,4 @@ append!(results,
         "R²" => model_pls_summary_kfolds.per_fold[2]
     ));
 
-pretty_table(results,highlighters = (h1, h2),title="\nPLS Regression")
+pretty_table(results,highlighters = (h1, h2),title="\nPLS Regression", crop = :none)
