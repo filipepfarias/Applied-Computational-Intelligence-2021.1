@@ -138,8 +138,8 @@ end
 
 # find the minimal error for λ
 (_,id) = findmin(log_train_rmse)
-λ = λ[id]
-train_coefficients = ridge(train_predictors, train_outcome,λi)
+λop = λ[id]
+train_coefficients = ridge(train_predictors, train_outcome, λop)
 
 # measure the error
 train_rmse = sqrt(mean(abs2.(train_outcome .- train_outcome_prediction)))
@@ -171,8 +171,8 @@ for k in [1, 2, 3, 4, 5]
     # solve using ridge
     λ = exp.(-100:1:100)
     log_train_rmse = [];
-    for λi in exp.(-100:1:100)
-        kfold_train_coefficients = ridge(kfold_train_predictors, kfold_train_predictors,λi)
+    for λi in λ
+        kfold_train_coefficients = ridge(kfold_train_predictors, kfold_train_predictors, λi)
         kfold_train_outcome_prediction = [kfold_train_predictors ones(size(kfold_train_predictors)[1],1)]*kfold_train_coefficients
         train_rmse = sqrt(mean(abs2.(kfold_train_predictors .- kfold_train_outcome_prediction)))
         push!(log_train_rmse,train_rmse)
@@ -180,8 +180,8 @@ for k in [1, 2, 3, 4, 5]
 
     # find the minimal error for λ
     (_,id) = findmin(log_train_rmse)
-    λ = λ[id]
-    kfold_train_coefficients = ridge(kfold_train_predictors, kfold_train_outcome,λi)
+    λop = λ[id]
+    kfold_train_coefficients = ridge(kfold_train_predictors, kfold_train_outcome, λop)
 
     # do prediction train
     kfold_train_outcome_prediction = kfold_train_predictors * kfold_train_coefficients[1:end-1] .+ kfold_train_coefficients[end]
