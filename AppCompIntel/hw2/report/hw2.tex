@@ -88,45 +88,46 @@ Regression models try to find relations between the \emph{independent variables}
 
 \subsection{Linear regression}
 
-This method tries to find the linear regression between the predictors and outcomes by fitting a line with linear coefficient $\beta_0$ and angular coefficient $\beta_1$, defined in (1), through the data. The fitting is done by minimising a cost function that can take different forms. Each cost function yields to different optimal parameters and two of them are described in the following, the \emph{Ordinary least squares} and \emph{L\textsubscript{2}-penalized least squares}. Regard the fact that $\beta_1$ can be a vector of the size such as the number of predictors in $X$. An interesting fact to observe is when the predictors correlates with the outcome, we can observe the error will be small. This is because the correlation evaluates linear variations between the variables as such as the linear regression.
+This method tries to find the linear regression between the predictors and outcomes by fitting a line with linear coefficient $\beta_0$ and angular coefficient $\beta_1$, defined in Eq.~(\ref{eq:lm}), through the data. The fitting is done by minimising a cost function that can take different forms. Each cost function yields to different optimal parameters and two of them are described in the following, the \emph{Ordinary least squares} and \emph{L\textsubscript{2}-penalized least squares}. Regard the fact that $\beta_1$ can be a vector of the size such as the number of predictors in $X$. An interesting fact to observe is when the predictors correlates with the outcome, we can observe the error will be small. This is because the correlation evaluates linear variations between the variables as such as the linear regression.
 
-\begin{align}
-  Y &= \begin{bmatrix}
-  \beta_0 & \beta_1
-  \end{bmatrix}
-  \begin{bmatrix}
-  1 \\ X
-  \end{bmatrix} + \varepsilon \\
-  \begin{bmatrix}
-  \hat{\beta}_0 \\ \hat{\beta}_1
-  \end{bmatrix} &= \left( \begin{bmatrix}
-  1 & X
-  \end{bmatrix}^\top
-  \begin{bmatrix}
-  1 & X
-  \end{bmatrix} \right)^{-1}
-  \begin{bmatrix}
-  1 & X
-  \end{bmatrix}^\top Y
+\begin{align} \label{eq:lm}   
+  Y &= \begin{bmatrix} 
+        \beta_0 & \beta_1 
+       \end{bmatrix} 
+       \begin{bmatrix} 
+        1 \\ X 
+      \end{bmatrix} + \varepsilon
+  %\\
+  % \begin{bmatrix} \label{eq:estimated_betas}
+  % \hat{\beta}_0 \\ \hat{\beta}_1
+  % \end{bmatrix} &= \left( \begin{bmatrix}
+  % 1 & X
+  % \end{bmatrix}^\top
+  % \begin{bmatrix}
+  % 1 & X
+  % \end{bmatrix} \right)^{-1}
+  % \begin{bmatrix}
+  % 1 & X
+  % \end{bmatrix}^\top Y
 \end{align} 
 
-\subsubsection{Ordinary least squares}
+The \emph{Ordinary least squares} defines the cost function to find the optimal parameters for Eq.~(\ref{eq:lm}) as
 
-\begin{equation}
+\begin{equation}\label{eq:cf_ols}
   L(\mathbf{y}, \boldsymbol{\beta}) =\sum_{i=1}^{n}\left(y_{i}-\beta_{0}-\sum_{j=1}^{p} \beta_{j} x_{i j}\right)^{2},
 \end{equation}
-
+%
 where $\mathbf{y} = [y_0, ..., y_p)]^T$ and $\boldsymbol{\beta} = [\beta_0, ..., \beta_p)]^T$.
 
-\subsubsection{L\textsubscript{2}-penalized least squares}
+The \emph{L\textsubscript{2}-penalized least squares} modifies Eq.~(\ref{eq:cf_ols}) adding a term that penalize large values of the parameters, yielding to
 
 \begin{equation}
   L(\mathbf{y}, \boldsymbol{\beta}) = \sum_{i=1}^{n}\left(y_{i}-\beta_{0}-\sum_{j=1}^{p} \beta_{j} x_{i j}\right)^{2}+\lambda \sum_{j=1}^{p} \beta_{j}^{2},
 \end{equation}
+%
+where $\mathbf{y} = [y_0, ..., y_p)]^T$, $\boldsymbol{\beta} = [\beta_0, ..., \beta_p)]^T$ and $\lambda$ is the penalization coefficient, which is a tunning parameter.
 
-where $\mathbf{y} = [y_0, ..., y_p)]^T$, $\boldsymbol{\beta} = [\beta_0, ..., \beta_p)]^T$ and $\lambda$ the penalization coefficient.
-
-\subsubsection{Partial least squares}
+\emph{Partial least squares}
 
 \clearpage
 
