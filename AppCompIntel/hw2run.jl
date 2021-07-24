@@ -15,7 +15,7 @@ using MLJ
 println("\nRunning HW2");
 println("\nLoading Concrete dataset");
 
-save_for_report = false;
+save_for_report = true;
 
 concrete_df = CSV.File(eval(@__DIR__)*"/data/Concrete_Data.csv", normalizenames=true) |> DataFrame;
 transform!(concrete_df, "Concrete_Compressive_Strength" => ByRow(strength -> get_category(strength)) => "Category");
@@ -24,12 +24,19 @@ println("\nRunning OLS Linear Regression");
 
 results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
 
-h1 = Highlighter((data,i,j)->(data[i,j] == findmin(data[:, 2])[1]),
-                        bold       = true,
-                        foreground = :cyan);
-h2 = Highlighter((data,i,j)->(data[i,j] == findmax(data[:, 3])[1]),
+if save_for_report
+    h1 = LatexHighlighter((data,i,j)->(data[i,j] == findmin(data[:, 2])[1]),
+                            ["textbf"]);
+    h2 = LatexHighlighter((data,i,j)->(data[i,j] == findmax(data[:, 3])[1]),
+                        ["textbf"]);
+else
+    h1 = Highlighter((data,i,j)->(data[i,j] == findmin(data[:, 2])[1]),
+                            bold       = true,
+                            foreground = :cyan);
+    h2 = Highlighter((data,i,j)->(data[i,j] == findmax(data[:, 3])[1]),
                         bold       = true,
                         foreground = :cyan); 
+end
 
 # Ingesting data
 y, X = unpack(concrete_df, ==(:Concrete_Compressive_Strength), !=(:Category))
@@ -77,7 +84,18 @@ append!(results,
         "R²" => model_lr_summary_kfolds.per_fold[2]
     ));
 
-pretty_table(results,highlighters = (h1, h2),title="OLS Linear Regression", crop = :none)
+if save_for_report
+    results = rename(results, "R²" => L"R^2");
+
+    table = pretty_table(String, results; backend = Val(:latex),
+        highlighters = (h1, h2),title="OLS Linear Regression");
+    
+    open("hw2/tables/results_lr.tex", "w") do io
+        write(io, table)
+    end; 
+else
+    pretty_table(results,highlighters = (h1, h2),title="OLS Linear Regression", crop = :none)
+end
 
 # Ridge Regression
 println("\nRunning L²-penalised Linear (Ridge) Regression\n");
@@ -127,7 +145,18 @@ append!(results,
         "R²" => model_rr_summary_kfolds.per_fold[2]
     ));
 
-pretty_table(results,highlighters = (h1, h2),title="Ridge Regression", crop = :none)
+if save_for_report
+    results = rename(results, "R²" => L"R^2");
+
+    table = pretty_table(String, results; backend = Val(:latex),
+        highlighters = (h1, h2),title="Ridge Regression");
+
+    open("hw2/tables/results_rl.tex", "w") do io
+        write(io, table)
+    end;
+else
+    pretty_table(results,highlighters = (h1, h2),title="Ridge Regression", crop = :none)
+end
 
 # PLS model
 println("\nRunning Partial Least Squares Regression\n");
@@ -174,4 +203,28 @@ append!(results,
         "R²" => model_pls_summary_kfolds.per_fold[2]
     ));
 
-pretty_table(results,highlighters = (h1, h2),title="\nPLS Regression", crop = :none)
+if save_for_report
+    results = rename(results, "R²" => L"R^2");
+
+    table = pretty_table(String, results; backend = Val(:latex),
+        highlighters = (h1, h2),title="PLS Regression");
+
+    open("hw2/tables/results_pls.tex", "w") do io
+        write(io, table)
+    end;
+else
+    pretty_table(results,highlighters = (h1, h2),title="\nPLS Regression", crop = :none)
+end
+
+# Plots
+if save_for_report
+    # Correlation + Scatter + Histogram
+    figure = scatterplot(select(concrete_df, Not(:Category)))
+    savefig(figure,figure_path("hw2/figurescorrelation_predictors_outcomes.pdf"))
+
+    figure = plot(map(p -> p.second,model_lr_summary_kfolds.fitted_params_per_fold[end].coefs), marker = :circle, markerstrokewidth=0.3 ,xticks = (1:8, latexstring.("D_" .* string.(1:8))), label = "Linear Regression")
+    savefig(figure,figure_path("fitted_params_70.pdf"))
+    
+    figure = plot(map(p -> p.second,model_lr_summary_70.fitted_params_per_fold[1].coefs), marker = :circle, markerstrokewidth=0.3 ,xticks = (1:8, latexstring.("D_" .* string.(1:8))), label = "Linear Regression")
+    savefig(figure,figure_path("fitted_params_kfolds.pdf"))
+end
