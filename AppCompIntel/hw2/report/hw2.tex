@@ -81,6 +81,12 @@ The composition of each of the $N$ concrete samples is given by the concentratio
 The concrete was stratified into $L=3$ classes\cite{b1}. The concrete which is weak and not recommended for structures, the \emph{Non-standard}, was labeled with $L_1$ and has 295 samples in it. The concrete whose strength is in a range that can be applied to structures is classified as $L_2$, or \emph{Standard}, and has 525 samples. The high performance concrete $L_3$, \emph{High-strength} and has 210 samples.
 The observations are the measured compressive strengths of each sample and, as the predictors $D_1 - D_7$, are continuous. The Age ($D_8$) of the concrete is extremely discrete. The output is the concrete strength 
 
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=\columnwidth]{../figures/correlation_predictors_outcomes}}
+\caption{Pairwise scatter plot of each concrete component.}
+\label{histogram_biplot}
+\end{figure}
+
 \section{Methods}\label{methods}
 
 Regression models try to find relations between the \emph{independent variables} and the \emph{dependent variables}, which are named, respectively, predictors and outcomes in this work. These relations can occur in different forms. The simplest one is the linear relationship, which is when the curve predictors \textit{vs} outcomes, in the case that both are one-dimemsional, forms a simple line and, in the general case, a hyperplane. In what folows, we formluate the \emph{Linear regression}, which is a subclass of regressions dedicated to find a linear model to explain the relation between the predictors and the outcomes. 
@@ -125,11 +131,28 @@ The \emph{L\textsubscript{2}-penalized least squares} modifies Eq.~(\ref{eq:cf_o
   L(\mathbf{y}, \boldsymbol{\beta}) = \sum_{i=1}^{n}\left(y_{i}-\beta_{0}-\sum_{j=1}^{p} \beta_{j} x_{i j}\right)^{2}+\lambda \sum_{j=1}^{p} \beta_{j}^{2},
 \end{equation}
 %
-where $\mathbf{y} = [y_0, ..., y_p)]^T$, $\boldsymbol{\beta} = [\beta_0, ..., \beta_p)]^T$ and $\lambda$ is the penalization coefficient, which is a tunning parameter.
+where $\mathbf{y} = [y_0, ..., y_p)]^T$, $\boldsymbol{\beta} = [\beta_0, ..., \beta_p)]^T$ and $\lambda$ is the penalization coefficient, which is a tuning parameter.
 
 \emph{Partial least squares}
 
-\clearpage
+\section{Results}
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=\columnwidth]{../figures/fitted_params_70}}
+\caption{Values of the weights of each predictor obtained after 30\%/70\% cross-validation strategy.}
+%\label{histogram_biplot}
+\end{figure}
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=\columnwidth]{../figures/fitted_params_kfolds}}
+\caption{Values of the weights of each predictor obtained after $5$-fold cross-validation strategy.}%\label{histogram_biplot}
+\end{figure}
+
+\input{../tables/results_lr.tex}
+
+\input{../tables/results_rl.tex}
+
+\input{../tables/results_pls.tex}
 
 \section{Conclusion}\label{conclusions}
 
