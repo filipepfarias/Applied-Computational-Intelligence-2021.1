@@ -44,22 +44,24 @@ concrete, compresive, strength, machine, learning, pre-processing
 \end{IEEEkeywords}
 
 \section{Introduction}
-A material formed by aggregates bonded together by a fluid material that hardens over time has been used by humans for construction since many years ago\cite{b3}. Nowadays this material is known as concrete and it's widely used in the construction field. The aggregates used in the concrete affect directly its compressive strength which highly impacts its applications. For instance, in general, the concrete for columns or beams needs to have a greater compressive strength than the one for pavement. On this paper, we carry out an statistical analysis on a dataset extracted from the UCI Machine Learning Repository (University of California, Irvine)\cite{b4} that collects information about the concentration of some aggregates used to form different types of concretes and their resulting compressive strenght. 
+A material formed by aggregates bonded together by a fluid material that hardens over time has been used by humans for construction since many years ago\cite{b3}. Nowadays this material is known as concrete and it's widely used in the construction field. The aggregates used in the mixture of the concrete affect directly its compressive strength which highly impacts its applications. For instance, in general, the concrete for columns or beams needs to have a greater compressive strength than the one for pavement. On the previous work, we made a statistical analysis on a dataset extracted from the UCI Machine Learning Repository (University of California, Irvine)\cite{b4} that collects information about the concentration of some aggregates used to form different types of concretes. Now we try to build a regression between those aggregates and the strength of the concrete, in order to find a relation that could indicate a mixture with better strength performance.
 
-This work is divided as follows. {\color{red}A description of the data is given in Section \ref{data_description}. The Section \ref{data_analysis} brings an unconditional and a class-conditional mono-variate analysis as well as unconditional bi-variate and multi-variate analysis of the data. Finally, the conclusions and considerations are exposed in Section }\ref{conclusions}.
+This work is divided as follows. A description of the data is given in Section \ref{data_description} resulted from the previous work with the addition of the regressor (concrete compressive strength). {\color{red}The Section \ref{data_analysis} brings an unconditional and a class-conditional mono-variate analysis as well as unconditional bi-variate and multi-variate analysis of the data. Finally, the conclusions and considerations are exposed in Section \ref{conclusions}.}
 
 % This works tries to predict this compressive strength and to classify when the concrete is proper to be applied in structures.  In the UCI database the concrete is tested with different components concentrations and different curing time (ages). 
 
 \section{Data description}\label{data_description}
 
-The composition of each of the $N$ concrete samples is given by the concentrations (kg/m\textsuperscript{3}) of $D$ components: Cement, Blast Furnace Slag, Fly Ash, Water, Superplasticizer, Coarse Aggregate and Fine Aggregate. Each sample has its Age (day) and the measured Concrete compressive strength (MPa), as described in Table~\ref{data_description_table}.
+The composition of each one of the $N$ concrete samples is given by the concentrations (kg/m\textsuperscript{3}) of $D$ components: Cement, Blast Furnace Slag, Fly Ash, Water, Superplasticizer, Coarse Aggregate and Fine Aggregate. The cement is what binds the elements of the concrete together. Indeed his technical name in the literature is \emph{binder} \cite{b5}. The other components as blast furnace slag and fly ash, the outcomes of another industrial process reused in the concrete mixture, they have the role of increase the chemical hardness of the concrete, i.e. in a microscopic level. The water is responsible for react with the cement resulting in the cement stone. The superplasticizer gives fluid characteristics to the concrete aiming to better fill the mold and decrease the use of water. The coarse and fine aggregates give some macroscopical mechanical resistance to the concrete but can reduce its compressive strength if bad applied. Their major role is to occupy the spaces in the mold reducing the use of cement. The output is the concrete compressive strength which is measure in the stress test where a force its applied to a sample using a hydraulic press. When the sample reaches rupture the pressure, force per area of the sample, is observed.
+
+%Each sample has its Age (day) and the measured Concrete compressive strength (MPa), as described in Table~\ref{data_description_table}.
 
 \begin{table}[htp]
 \caption{Data description}
 \begin{center}
   \begin{tabular}{@{} clc @{}}
     \toprule
-    Component & Description & Unit \\ 
+    Label & Component & Unit \\ 
     \midrule
     $D_1$ & Cement & kg/m\textsuperscript{3} \\ 
     $D_2$ & Blast Furnace Slag & kg/m\textsuperscript{3} \\ 
@@ -69,61 +71,55 @@ The composition of each of the $N$ concrete samples is given by the concentratio
     $D_6$ & Coarse Aggregate & kg/m\textsuperscript{3} \\ 
     $D_7$ & Fine Aggregate & kg/m\textsuperscript{3} \\ 
     $D_8$ & Age & days \\ 
-    $Y$ & Compressive strength & MPa \\ 
+    ${\bf D_9}$ & {\bf Compressive strength} & {\bf MPa} \\ 
 	\midrule
-    N & 1030 samples&  \\ 
+    Total & 1030 samples&  \\ 
     \bottomrule
   \end{tabular}
 \end{center}
 \label{data_description_table}
 \end{table}%
 
-The concrete was stratified into $L=3$ classes\cite{b1}. The concrete which is weak and not recommended for structures, the \emph{Non-standard}, was labeled with $L_1$ and has 295 samples in it. The concrete whose strength is in a range that can be applied to structures is classified as $L_2$, or \emph{Standard}, and has 525 samples. The high performance concrete $L_3$, \emph{High-strength} and has 210 samples.
-The observations are the measured compressive strengths of each sample and, as the predictors $D_1 - D_7$, are continuous. The Age ($D_8$) of the concrete is extremely discrete. The output is the concrete strength 
+%The concrete was stratified into $L=3$ classes\cite{b1}. The concrete which is weak and not recommended for structures, the \emph{Non-standard}, was labeled with $L_1$ and has 295 samples in it. The concrete whose strength is in a range that can be applied to structures is classified as $L_2$, or \emph{Standard}, and has 525 samples. The high performance concrete $L_3$, \emph{High-strength} and has 210 samples.
+The observations are the measured compressive strengths of each sample and, as the predictors $D_1 - D_7$, are continuous. The Age ($D_8$) of the concrete is extremely discrete.
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=\columnwidth]{../figures/correlation_predictors_outcomes}}
-\caption{Pairwise scatter plot of each concrete component.}
+\caption{Pairwise scatter, correlation and histogram plots of each concrete component.}
 \label{histogram_biplot}
 \end{figure}
 
 \section{Methods}\label{methods}
 
-Regression models try to find relations between the \emph{independent variables} and the \emph{dependent variables}, which are named, respectively, predictors and outcomes in this work. These relations can occur in different forms. The simplest one is the linear relationship, which is when the curve predictors \textit{vs} outcomes, in the case that both are one-dimemsional, forms a simple line and, in the general case, a hyperplane. In what folows, we formluate the \emph{Linear regression}, which is a subclass of regressions dedicated to find a linear model to explain the relation between the predictors and the outcomes. 
+Regression models try to find relations between the \emph{independent variables} and the \emph{dependent variables}, which are named, respectively, predictors and outcomes in this work. These relations can occur in different forms. The simplest one is the linear relationship, which is when the curve predictors \textit{vs} outcomes, in the case that both are one-dimensional, forms a simple line and, in the general case, a hyperplane. In what follows, we formulate the \emph{Linear regression}, which is a subclass of regressions dedicated to find a linear model to explain the relation between the predictors and the outcomes. 
 
 
 \subsection{Linear regression}
 
-This method tries to find the linear regression between the predictors and outcomes by fitting a line with linear coefficient $\beta_0$ and angular coefficient $\beta_1$, defined in Eq.~(\ref{eq:lm}), through the data. The fitting is done by minimising a cost function that can take different forms. Each cost function yields to different optimal parameters and two of them are described in the following, the \emph{Ordinary least squares} and \emph{L\textsubscript{2}-penalized least squares}. Regard the fact that $\beta_1$ can be a vector of the size such as the number of predictors in $X$. An interesting fact to observe is when the predictors correlates with the outcome, we can observe the error will be small. This is because the correlation evaluates linear variations between the variables as such as the linear regression.
-
 \begin{align} \label{eq:lm}   
   Y &= \begin{bmatrix} 
-        \beta_0 & \beta_1 
+        \beta_0 & \boldsymbol{\beta}^\top 
        \end{bmatrix} 
        \begin{bmatrix} 
-        1 \\ X 
+        \mathbf{1} \\ X 
       \end{bmatrix} + \varepsilon
-  %\\
-  % \begin{bmatrix} \label{eq:estimated_betas}
-  % \hat{\beta}_0 \\ \hat{\beta}_1
-  % \end{bmatrix} &= \left( \begin{bmatrix}
-  % 1 & X
-  % \end{bmatrix}^\top
-  % \begin{bmatrix}
-  % 1 & X
-  % \end{bmatrix} \right)^{-1}
-  % \begin{bmatrix}
-  % 1 & X
-  % \end{bmatrix}^\top Y
 \end{align} 
+
+This method tries to find the linear regression between the predictors and outcomes by fitting a line with linear coefficient $\boldsymbol{\beta}$ and angular coefficient $\boldsymbol{\beta}$, defined in Eq.~(\ref{eq:lm}), through the data. $\boldsymbol{\beta}$ is the size such as the number of predictors in $X$, in the way we can define the vector $\boldsymbol{\beta} = [\beta_0, ..., \beta_D]^\top$. Wrapping up $[\beta_0 \ \boldsymbol{\beta}]^\top$ is a $1\times (D+1)$, $\mathbf{x} = [\mathbf{1} \ X]^\top$ is a $(N+1)\times D$ matrix and $Y$ is a $N\times 1$ matrix. For limitations on the implementation, it was adopted the label $D_9$ for the outcome, then the dimension $D$ of the matrices must be considered without the outcome component, that is 8 components.
+
+The fitting, i.e. finding the values for each of the linear and angular coefficients, is done by minimising a cost function that can take different forms. Each cost function yields to different optimal parameters and two of them are described in the following, the \emph{Ordinary least squares} and \emph{L\textsubscript{2}-penalized least squares}. An interesting fact to observe is when the predictors correlates with the outcome, we can observe the error will be small. This is because the correlation evaluates linear variations between the variables as such as the linear regression.
 
 The \emph{Ordinary least squares} defines the cost function to find the optimal parameters for Eq.~(\ref{eq:lm}) as
 
 \begin{equation}\label{eq:cf_ols}
-  L(\mathbf{y}, \boldsymbol{\beta}) =\sum_{i=1}^{n}\left(y_{i}-\beta_{0}-\sum_{j=1}^{p} \beta_{j} x_{i j}\right)^{2},
+  L(\mathbf{y}, \boldsymbol{\beta}) =\sum_{i=1}^{n}\left(y_{i}-\beta_{0}-\sum_{j=1}^{p} \beta_{j} x_{i j}\right)^{2}.
 \end{equation}
 %
-where $\mathbf{y} = [y_0, ..., y_p)]^T$ and $\boldsymbol{\beta} = [\beta_0, ..., \beta_p)]^T$.
+This cost function represents a quadratic distance between the model, i.e. the linear combination of the coefficients and the data. We have the minimal distance, we obtain the best model. This minimisation can be done by differentiating Eq. (\ref{eq:cf_ols}) w.r.t. the $\beta$'s giving the coefficients $\hat{\boldsymbol{\beta}}$ of the best model by
+%
+\[
+\hat{\boldsymbol{\beta}} = (\mathbf{x}^\top\mathbf{x})^{-1}\mathbf{x}^\top Y.
+\]
 
 The \emph{L\textsubscript{2}-penalized least squares} modifies Eq.~(\ref{eq:cf_ols}) adding a term that penalize large values of the parameters, yielding to
 
@@ -131,7 +127,11 @@ The \emph{L\textsubscript{2}-penalized least squares} modifies Eq.~(\ref{eq:cf_o
   L(\mathbf{y}, \boldsymbol{\beta}) = \sum_{i=1}^{n}\left(y_{i}-\beta_{0}-\sum_{j=1}^{p} \beta_{j} x_{i j}\right)^{2}+\lambda \sum_{j=1}^{p} \beta_{j}^{2},
 \end{equation}
 %
-where $\mathbf{y} = [y_0, ..., y_p)]^T$, $\boldsymbol{\beta} = [\beta_0, ..., \beta_p)]^T$ and $\lambda$ is the penalization coefficient, which is a tuning parameter.
+where $\lambda$ is the penalisation coefficient, a tuning parameter. Different from ordinary least squares, we find $\lambda$ such the model will be the best one with \emph{cross-validation}. The values of the coefficients for a given $\lambda$ is 
+%
+\[
+\hat{\boldsymbol{\beta}} = (\mathbf{x}^\top\mathbf{x} + \lambda)^{-1}\mathbf{x}^\top Y.
+\]
 
 \emph{Partial least squares}
 
@@ -150,7 +150,7 @@ where $\mathbf{y} = [y_0, ..., y_p)]^T$, $\boldsymbol{\beta} = [\beta_0, ..., \b
 
 \input{../tables/results_lr.tex}
 
-\input{../tables/results_rl.tex}
+\input{../tables/results_rr.tex}
 
 \input{../tables/results_pls.tex}
 
@@ -160,8 +160,9 @@ The database of concrete is not easy to analyse if there is no previous knowledg
 
 \begin{thebibliography}{00}
 \bibitem{b1} ACI Manual of Concrete Practice 2000, Part 1: Materials and General Properties of Concrete.  American Concrete Institute.  Farmington Hills, MI.
-\bibitem{b2} Tibshirani, Robert, et al. The Elements of  Statistical Learning:  Data Mining, Inference, and Prediction. Alemanha, Springer New York, 2009.
+\bibitem{b2} Tibshirani, Robert, et al. The Elements of  Statistical Learning:  Data Mining, Inference, and Prediction. Germany, Springer New York, 2009.
 \bibitem{b3} Mindess, S., and Young, J.F. Concrete. Prentice-Hall, Inc., Englewood Cliffs, NJ, 1981.
 \bibitem{b4} I-Cheng Yeh, "Modeling of strength of high performance concrete using artificial neural networks," Cement and Concrete Research, Vol. 28, No. 12, pp. 1797-1808 (1998)
+\bibitem{b5} Khasanov, Irmuhamedova, et al, "Theoretical foundations of the structure formation of cement stoneand concrete", IOP Conf. Series: Materials Science and Engineering 869 (2020)
 \end{thebibliography}
 \end{document}
