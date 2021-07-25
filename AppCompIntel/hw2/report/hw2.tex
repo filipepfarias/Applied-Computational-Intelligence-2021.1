@@ -136,7 +136,7 @@ where $\lambda$ is the penalisation coefficient, a tuning parameter. Different f
 
 The idea of the partial least squares (PLS) is in the same line of the previous linear regression of Eq. (\ref{eq:cf_ols}). But when $\mathbf{x}$ is \emph{ill-conditioned}, i.e. the features are strongly correlated \cite{b7}. In terms of the linear algebra theory, our matrix can have lines (rows or columns) that are scaled versions of each other hence it is rank deficient.
 
-Now what is done is to project the predictors into a lower-dimensional predictors space, in such way that the resulting ``new predictors'' are a linear combination of the original ones. Then we do the regression using this new predictors. This projection is done also considering the information of $Y$ and not just obtaining the space which $\mathbf{x}$ has its variance maximised as in \emph{principal component regression} (PCR). In PLS we need to find $\mathbf{w}$ and $\mathbf{c}$ in Eq. (\ref{eq:pls}) to create a linear combination to consider that information of $Y$ in a such way that we obtain the maximum covariance. The process of finding these matrices is iterative and described by Abdi \cite{b5}.
+Now what is done is to project the predictors into a lower-dimensional predictors space, in such way that the resulting ``new predictors'' are a linear combination of the original ones. Then we do the regression using this new predictors. This projection is done also considering the information of $Y$ and not just obtaining the space which $\mathbf{x}$ has its variance maximised as in \emph{principal component regression} (PCR). In PLS we need to find $\mathbf{w}$ and $\mathbf{c}$ in Eq. (\ref{eq:pls}) to create a linear combination to consider that information of $Y$ in a such way that we obtain the maximum covariance. The process of finding these matrices is iterative and described by Indahl \cite{b8}.
 %
 \begin{equation}
 \mathbf{t} = \mathbf{x}\mathbf{w}\ \text{and}\ \mathbf{u}=Y\mathbf{c}\ \text{with}\ \textbf{w}^\top\textbf{w}=\textbf{t}^\top\textbf{t}=1.
@@ -162,6 +162,8 @@ Now what is done is to project the predictors into a lower-dimensional predictor
 
 \input{../tables/results_pls.tex}
 
+\input{../tables/results_pls_variance.tex}
+
 \section{Conclusions}\label{sec:conclusions}
 
 The database of concrete is not easy to analyse if there is no previous knowledge about the problem of the components mixture. In none of the analysis the data have been shown as separable on the initially determined classes. The next step is to try to perform regression to model the compressive strength itself before trying to classify the samples. in the literature \cite{b6} is more common an analysis of the concrete data stratified by the Age, what was not done in this work and maybe the cause of poor correlations.
@@ -172,6 +174,7 @@ The database of concrete is not easy to analyse if there is no previous knowledg
 \bibitem{b3} Mindess, S., and Young, J.F. Concrete. Prentice-Hall, Inc., Englewood Cliffs, NJ, 1981.
 \bibitem{b4} I-Cheng Yeh, ``Modeling of strength of high performance concrete using artificial neural networks," Cement and Concrete Research, Vol. 28, No. 12, pp. 1797-1808 (1998)
 \bibitem{b7} Abdi, Hervé, ``Partial least squares regression and projection on latent structure regression (PLS Regression),'' WIREs Computational Statistics, 2010-01-01 2(1): 97-106.
+\bibitem{b8} Ulf G. Indahl, ``The geometry of PLS1 explained properly: 10 key notes on mathematical properties of and some alternative algorithmic approaches to PLS1 modelling,'' Journal of Chemometrics, 2013.
 \bibitem{b6} I-Cheng Yeh, ``Prediction of Strength of Fly Ash and Slag Concrete By The Use of Artificial Neural Networks," Journal of the Chinese Institute of Civil and Hydraulic Engineering, Vol. 15, No. 4, pp. 659-663 (2003). 
 \bibitem{b5} Khasanov, Irmuhamedova, et al, ``Theoretical foundations of the structure formation of cement stone
 and concrete," IOP Conf. Series: Materials Science and Engineering 869 (2020)

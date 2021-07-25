@@ -217,7 +217,7 @@ else
 end
 
 # Plots
-if true
+if save_for_report
     # Correlation + Scatter + Histogram
     figure = scatterplot(select(concrete_df, Not(:Category)))
     savefig(figure,figure_path("correlation_predictors_outcomes.pdf"))
@@ -246,3 +246,10 @@ if true
         size=(360,180))
     savefig(figure,figure_path("fitted_params_kfolds.pdf"))
 end
+
+# To add:
+
+# Variance explained
+
+# P = model_pls_summary_kfolds.fitted_params_per_fold[1][2][1].P
+# DataFrame("Principal Components" => "PC".*string.(1:8), "Variance Explained (%)" => round.((eigen(P*P').values) ./sum(eigen(P*P').values) * 100; digits=2 )[end:-1:1])
