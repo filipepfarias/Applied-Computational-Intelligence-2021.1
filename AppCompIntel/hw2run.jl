@@ -15,7 +15,7 @@ using MLJ
 println("\nRunning HW2");
 println("\nLoading Concrete dataset");
 
-save_for_report = true;
+save_for_report = false;
 
 concrete_df = CSV.File(eval(@__DIR__)*"/data/Concrete_Data.csv", normalizenames=true) |> DataFrame;
 transform!(concrete_df, "Concrete_Compressive_Strength" => ByRow(strength -> get_category(strength)) => "Category");
@@ -151,7 +151,7 @@ if save_for_report
     table = pretty_table(String, results; backend = Val(:latex),
         highlighters = (h1, h2),title="Ridge Regression");
 
-    open("hw2/tables/results_rl.tex", "w") do io
+    open("hw2/tables/results_rr.tex", "w") do io
         write(io, table)
     end;
 else
@@ -217,14 +217,32 @@ else
 end
 
 # Plots
-if save_for_report
+if true
     # Correlation + Scatter + Histogram
     figure = scatterplot(select(concrete_df, Not(:Category)))
-    savefig(figure,figure_path("hw2/figurescorrelation_predictors_outcomes.pdf"))
+    savefig(figure,figure_path("correlation_predictors_outcomes.pdf"))
 
-    figure = plot(map(p -> p.second,model_lr_summary_kfolds.fitted_params_per_fold[end].coefs), marker = :circle, markerstrokewidth=0.3 ,xticks = (1:8, latexstring.("D_" .* string.(1:8))), label = "Linear Regression")
+    figure = plot(map(p -> p.second,
+        model_lr_summary_70.fitted_params_per_fold[1].coefs), 
+        marker = :circle, markerstrokewidth=0.3 ,
+        xticks = (1:8, latexstring.("D_" .* string.(1:8))), 
+        label = "Linear Regression")
+    figure = plot!(map(p -> p.second,
+        model_rr_summary_70.fitted_params_per_fold[1].best_fitted_params[1]), 
+        marker = :diamond, markerstrokewidth=0.3, 
+        label = "L₂-Penalised",
+        size=(360,180))
     savefig(figure,figure_path("fitted_params_70.pdf"))
     
-    figure = plot(map(p -> p.second,model_lr_summary_70.fitted_params_per_fold[1].coefs), marker = :circle, markerstrokewidth=0.3 ,xticks = (1:8, latexstring.("D_" .* string.(1:8))), label = "Linear Regression")
+    figure = plot(map(p -> p.second,
+        model_lr_summary_kfolds.fitted_params_per_fold[end].coefs), 
+        marker = :circle, markerstrokewidth=0.3, 
+        xticks = (1:8, latexstring.("D_" .* string.(1:8))), 
+        label = "Linear Regression")
+    figure = plot!(map(p -> p.second,
+        model_rr_summary_kfolds.fitted_params_per_fold[1].best_fitted_params[1]), 
+        marker = :diamond, markerstrokewidth=0.3, 
+        label = "L₂-Penalised",
+        size=(360,180))
     savefig(figure,figure_path("fitted_params_kfolds.pdf"))
 end

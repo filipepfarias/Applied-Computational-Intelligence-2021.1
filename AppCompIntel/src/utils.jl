@@ -23,7 +23,7 @@ function scatterplot(data::AbstractDataFrame; kw...)
             if i == j
                 fig_matrix[i,i] = @df data groupedhist(cols(i), axis=true, ticks=false, legend=false, bins=10, lw = 0.1, framestyle = :box, kw...)
             elseif i>j
-                fig_matrix[i,j] = @df data scatter(cols(i), cols(j), axis=true, ticks=false, legend=false; markerstrokecolor=:white, markerstrokewidth=0.1, markersize=2.7, framestyle = :box, kw...)
+                fig_matrix[i,j] = @df data scatter(cols(i), cols(j), axis=true, ticks=false, legend=false; markerstrokecolor=:white, markerstrokewidth=0.0, markersize=2.7, framestyle = :box, kw...)
             else
                 fig_matrix[i,j] = heatmap([1.0],[1.0],hcat([cor_matrix[i,j]]),
                     clim = (-1,1), c=:diverging_bwr_20_95_c54_n256, colorbar = false, axis=false, ticks = false)
