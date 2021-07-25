@@ -36,21 +36,21 @@ yvo@gtel.ufc.br}
 \maketitle
 
 \begin{abstract}
-The compressive strength of concrete impacts directly on its application. The difference between the concrete for columns or beams and the concrete for pavements is mainly due the compressive strength it is able to resist. In this work, we perform an unconditional and a class-conditional mono-variate analysis as well as unconditional bi-variate and multi-variate analysis of the UCI concrete composition database.
+The compressive strength of a concrete is a important property since it impacts directly on its applications. The classical approach to obtain the compressive strength of a specific concrete mixture is to submit a sample to a test on a hydraulic press. However, it takes time to perform this type of test since it is necessary to wait the sample to cure. In this work, we try to find a regression model to accurately estimate the compressive strength of a concrete mixture from the concentration of its components.
 \end{abstract}
 
 \begin{IEEEkeywords}
-concrete, compresive, strength, machine, learning, pre-processing
+Regression models, Concrete compressive strength, Machine-learning.
 \end{IEEEkeywords}
 
 \section{Introduction}
-A material formed by aggregates bonded together by a fluid material that hardens over time has been used by humans for construction since many years ago\cite{b3}. Nowadays this material is known as concrete and it's widely used in the construction field. The aggregates used in the mixture of the concrete affect directly its compressive strength which highly impacts its applications. For instance, in general, the concrete for columns or beams needs to have a greater compressive strength than the one for pavement. On the previous work, we made a statistical analysis on a dataset extracted from the UCI Machine Learning Repository (University of California, Irvine)\cite{b4} that collects information about the concentration of some aggregates used to form different types of concretes. Now we try to build a regression between those aggregates and the strength of the concrete, in order to find a relation that could indicate a mixture with better strength performance.
+A material formed by aggregates bonded together by a fluid material that hardens over time has been used by humans for construction since many years ago\cite{b3}. Nowadays this material is known as concrete and it's widely used in the construction field. The aggregates used in the mixture of the concrete affect directly its compressive strength which highly impacts its applications. For instance, in general, the concrete for columns or beams needs to have a greater compressive strength than the one for pavement. On the previous work, we have made a statistical analysis on a dataset extracted from the UCI Machine Learning Repository (University of California, Irvine)\cite{b4} that collects information about the concentration of some aggregates used to form different mixtures of concretes. In this work, we try to find a regression model to estimate the relation between the concentration of those aggregates and the strength of the concrete mixture. The goal is that such model could be a good replacement to tests of samples on hydraulically press.
 
-This work is divided as follows. A description of the data is given in Section \ref{data_description} resulted from the previous work with the addition of the regressor (concrete compressive strength). {\color{red}The Section \ref{data_analysis} brings an unconditional and a class-conditional mono-variate analysis as well as unconditional bi-variate and multi-variate analysis of the data. Finally, the conclusions and considerations are exposed in Section \ref{conclusions}.}
+This work is divided as follows. A description of the data is given in Section~\ref{sec:data_description} resulted from the previous work with the addition of the regressor (concrete compressive strength). Section~\ref{sec:rm} brings a brief introduction to the regression models that will be used to fit the data. In the sequel, we present and discuss the results in Section~\ref{sec:results}. Finally, the conclusions and considerations are exposed in Section~\ref{sec:conclusions}.
 
 % This works tries to predict this compressive strength and to classify when the concrete is proper to be applied in structures.  In the UCI database the concrete is tested with different components concentrations and different curing time (ages). 
 
-\section{Data description}\label{data_description}
+\section{Data description}\label{sec:data_description}
 
 The composition of each one of the $N$ concrete samples is given by the concentrations (kg/m\textsuperscript{3}) of $D$ components: Cement, Blast Furnace Slag, Fly Ash, Water, Superplasticizer, Coarse Aggregate and Fine Aggregate. The cement is what binds the elements of the concrete together. Indeed his technical name in the literature is \emph{binder} \cite{b5}. The other components as blast furnace slag and fly ash, the outcomes of another industrial process reused in the concrete mixture, they have the role of increase the chemical hardness of the concrete, i.e. in a microscopic level. The water is responsible for react with the cement resulting in the cement stone. The superplasticizer gives fluid characteristics to the concrete aiming to better fill the mold and decrease the use of water. The coarse and fine aggregates give some macroscopical mechanical resistance to the concrete but can reduce its compressive strength if bad applied. Their major role is to occupy the spaces in the mold reducing the use of cement. The output is the concrete compressive strength which is measure in the stress test where a force its applied to a sample using a hydraulic press. When the sample reaches rupture the pressure, force per area of the sample, is observed.
 
@@ -88,7 +88,7 @@ The observations are the measured compressive strengths of each sample and, as t
 \label{histogram_biplot}
 \end{figure}
 
-\section{Methods}\label{methods}
+\section{Regression models}\label{sec:rm}
 
 Regression models try to find relations between the \emph{independent variables} and the \emph{dependent variables}, which are named, respectively, predictors and outcomes in this work. These relations can occur in different forms. The simplest one is the linear relationship, which is when the curve predictors \textit{vs} outcomes, in the case that both are one-dimensional, forms a simple line and, in the general case, a hyperplane. In what follows, we formulate the \emph{Linear regression}, which is a subclass of regressions dedicated to find a linear model to explain the relation between the predictors and the outcomes. 
 
@@ -162,7 +162,7 @@ Now what is done is to project the predictors into a lower-dimensional predictor
 
 \input{../tables/results_pls.tex}
 
-\section{Conclusion}\label{conclusions}
+\section{Conclusions}\label{sec:conclusions}
 
 The database of concrete is not easy to analyse if there is no previous knowledge about the problem of the components mixture. In none of the analysis the data have been shown as separable on the initially determined classes. The next step is to try to perform regression to model the compressive strength itself before trying to classify the samples. in the literature \cite{b6} is more common an analysis of the concrete data stratified by the Age, what was not done in this work and maybe the cause of poor correlations.
 
