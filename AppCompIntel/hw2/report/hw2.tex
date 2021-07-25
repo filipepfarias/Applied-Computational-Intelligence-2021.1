@@ -145,46 +145,47 @@ Now what is done is to project the predictors into a lower-dimensional predictor
 
 \section{Results} \label{sec:results}
 
-In this section, we present the results of fitting the \emph{Ordinary least squares}, the \emph{L\textsubscript{2}-penalized least squares} and the \emph{Partial least squares} in the data. Each one of the methods was subjected to 70\% Train / 30\% Test and 5-fold cross-validation strategies. In the first, 70\% of the data was used to train the models and the rest for test. In the 5-fold the data was folded into 5 groups equally divided and one of them was selected as test group and the other as training group. This step was repeated until all of the 5 groups be used for test.
+In this section, we present the results of fitting the \emph{Ordinary least squares}, the \emph{L\textsubscript{2}-penalized least squares} and the \emph{Partial least squares} in the data. Each one of the methods was subjected to 70\% Train / 30\% Test and 5-fold cross-validation strategies. In the first, 70\% of the data was used to train the models and the rest for test. In the 5-fold the data was folded into 5 groups equally divided and one of them was selected as test group and the others as training groups. This step was repeated until all of the 5 groups were used for test.
+
 %
 \input{../tables/results_lr.tex} 
 %
 \input{../tables/results_rr.tex}
+%
+\input{../tables/results_pls.tex}
 
 Tables~\ref{table:ols},\ref{table:pls} and \ref{table:ridge} summarise the values of RMSE and $R^2$ resulted from the fitting of the data by the linear models for the 70\% Train / 30\% Test and 5-fold cross-validation strategies. In all three tables, the smallest value of RMSE and the largest value of $R^2$ are highlighted.
 
 Since the values of $R^2$ are approximately at most 66\%, none of the models could explain more than this value of the variance of the data. This result suggests that the relation between the predictors and the outcome is not linear, thus a non-linear model such as neural networks, as used by \cite{b4}, could yield to a better fitting. 
 
 Although the values of RMSE for the applied linear models are small, we should keep in mind that the data is normalised with mean 0 and variance 1. Therefore, in this situation an RMSE of 0.58 implies to an error of more than half the variance. However, the models with the smallest values of RMSE explained better the variance of the data.
+
+Figure~\ref{fig:angular_coefficients_1} and Figure~\ref{fig:angular_coefficients_2} show the values of the angular coefficients of each predictor obtained, respectively, using the 70\% Train / 30\% Test and 5-fold cross-validation strategies. Notice the highest value of the coefficient is of the Cement $D_1$ and the smaller one the Water $D_4$. To point some real world meaningful relation to this, some previous study on the specifics of theses components is needed, but some literatures \cite{b1} refers at least to the cement as the most important compound to the strength of the concrete. But some knowledge needs to be applied because this increase in the amount of cement is bounded, then this do not always leads to a better strength value\cite{b4}.
 %
 \begin{figure}[!h] 
-\centerline{\includegraphics[width=\columnwidth]{../figures/fitted_params_70}}
-\caption{Values of the angular coefficients of each predictor obtained after 30\%/70\% cross-validation strategy.}
-\label{fig:angular_coefficients_1}
+  \centerline{\includegraphics[width=0.8\columnwidth]{../figures/fitted_params_70}}
+  \caption{Values of the angular coefficients of each predictor obtained after 30\%/70\% cross-validation strategy.}
+  \label{fig:angular_coefficients_1}
+  \end{figure}
+  %
+  \begin{figure}[!h]
+  \centerline{\includegraphics[width=0.8\columnwidth]{../figures/fitted_params_kfolds}}
+  \caption{Values of the angular coefficients of each predictor obtained after $5$-fold cross-validation strategy.}
+  \label{fig:angular_coefficients_2}
+  \vskip-5pt
 \end{figure}
-%
-\begin{figure}[!h]
-\centerline{\includegraphics[width=\columnwidth]{../figures/fitted_params_kfolds}}
-\caption{Values of the angular coefficients of each predictor obtained after $5$-fold cross-validation strategy.}
-\label{fig:angular_coefficients_2}
-\vskip-5pt
-\end{figure}
-
-Figure~\ref{fig:angular_coefficients_1} and Figure~\ref{fig:angular_coefficients_2} show the values of the angular coefficients of each predictor obtained, respectively, after the 70\% Train / 30\% Test and 5-fold cross-validation strategies. Notice the highest value of the coefficient is of the Cement $D_1$ and the smaller one the Water $D_4$. To point some real world meaningful relation to this, some previous study on the specifics of theses components is needed, but some literatures \cite{b1} refers at least to the cement as the most important compound to the strength of the concrete. But some knowledge needs to be applied because this increase in the amount of cement is bounded, then this do not always leads to a better strength value\cite{b4}.
 
 For the $L_2$-penalized model, the $\lambda$ founded was $0.71968$ for the minimum RMSE. The values of RMSE for the $\lambda$ values evaluated are on Fig. \ref{fig:L2_lambda} in which we note the model looses its flexibility with the increase of $\lambda$ leading to a greater error.
-\vskip-2pt
+%
+\input{../tables/results_pls_variance.tex}
+
 \begin{figure}[!h] 
-\centerline{\includegraphics[width=\columnwidth]{../figures/L2_lambda}}
+\centerline{\includegraphics[width=0.8\columnwidth]{../figures/L2_lambda}}
 \caption{RMSE ($y$-axis) values for $\lambda$ ($x$-axis) parameter of the $L_2$-penalized least squares.}
 \label{fig:L2_lambda}
 \end{figure}
 
-\input{../tables/results_pls_variance.tex}
-
 The same intuition can not be done for the PLS results in the \autoref{table:pls-variance} given the space of its regression is another from the one the same as the compounds of the concrete are known. But a similar result to the previous work in which the explained variance is more disperse in the other principal components is noticed. 
-
-\input{../tables/results_pls.tex}
 
 The same analysis made for the summaries of the previous models can be applied to the PLS which the results are in \autoref{table:pls-variance}. The model was trained under the same cross-validation strategies yielding to the best model found with the 8 PC's used.
 
