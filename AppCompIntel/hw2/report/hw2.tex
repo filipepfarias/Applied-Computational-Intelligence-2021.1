@@ -129,22 +129,31 @@ The \emph{L\textsubscript{2}-penalized least squares} modifies Eq.~(\ref{eq:cf_o
 where $\lambda$ is the penalisation coefficient, a tuning parameter. Different from ordinary least squares, we find $\lambda$ such the model will be the best one with \emph{cross-validation}. The values of the coefficients for a given $\lambda$ is 
 %
 \[
-\hat{\boldsymbol{\beta}} = (\mathbf{x}^\top\mathbf{x} + \lambda)^{-1}\mathbf{x}^\top Y.
+\hat{\boldsymbol{\beta}} = (\mathbf{x}^\top\mathbf{x} + \lambda I)^{-1}\mathbf{x}^\top Y.
 \]
 
 \subsection{Partial least squares}
+
+The idea of the partial least squares (PLS) is in the same line of the previous linear regression of Eq. (\ref{eq:cf_ols}). But when $\mathbf{x}$ is \emph{ill-conditioned}, i.e. the features are strongly correlated \cite{b7}. In terms of the linear algebra theory, our matrix can have lines (rows or columns) that are scaled versions of each other hence it is rank deficient.
+
+Now what is done is to project the predictors into a lower-dimensional predictors space, in such way that the resulting ``new predictors'' are a linear combination of the original ones. Then we do the regression using this new predictors. This projection is done also considering the information of $Y$ and not just obtaining the space which $\mathbf{x}$ has its variance maximised as in \emph{principal component regression} (PCR). In PLS we need to find $\mathbf{w}$ and $\mathbf{c}$ in Eq. (\ref{eq:pls}) to create a linear combination to consider that information of $Y$ in a such way that we obtain the maximum covariance. The process of finding these matrices is iterative and described by Abdi \cite{b5}.
+%
+\begin{equation}
+\mathbf{t} = \mathbf{x}\mathbf{w}\ \text{and}\ \mathbf{u}=Y\mathbf{c}\ \text{with}\ \textbf{w}^\top\textbf{w}=\textbf{t}^\top\textbf{t}=1.
+\label{eq:pls}
+\end{equation}
 
 \section{Results}
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=\columnwidth]{../figures/fitted_params_70}}
-\caption{Values of the weights of each predictor obtained after 30\%/70\% cross-validation strategy.}
+\caption{Values of the angular coefficients of each predictor obtained after 30\%/70\% cross-validation strategy.}
 %\label{histogram_biplot}
 \end{figure}
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=\columnwidth]{../figures/fitted_params_kfolds}}
-\caption{Values of the weights of each predictor obtained after $5$-fold cross-validation strategy.}%\label{histogram_biplot}
+\caption{Values of the angular coefficients of each predictor obtained after $5$-fold cross-validation strategy.}%\label{histogram_biplot}
 \end{figure}
 
 \input{../tables/results_lr.tex}
@@ -162,6 +171,7 @@ The database of concrete is not easy to analyse if there is no previous knowledg
 \bibitem{b2} Tibshirani, Robert, et al. The Elements of  Statistical Learning:  Data Mining, Inference, and Prediction. Germany, Springer New York, 2009.
 \bibitem{b3} Mindess, S., and Young, J.F. Concrete. Prentice-Hall, Inc., Englewood Cliffs, NJ, 1981.
 \bibitem{b4} I-Cheng Yeh, ``Modeling of strength of high performance concrete using artificial neural networks," Cement and Concrete Research, Vol. 28, No. 12, pp. 1797-1808 (1998)
+\bibitem{b7} Abdi, Hervé, ``Partial least squares regression and projection on latent structure regression (PLS Regression),'' WIREs Computational Statistics, 2010-01-01 2(1): 97-106.
 \bibitem{b6} I-Cheng Yeh, ``Prediction of Strength of Fly Ash and Slag Concrete By The Use of Artificial Neural Networks," Journal of the Chinese Institute of Civil and Hydraulic Engineering, Vol. 15, No. 4, pp. 659-663 (2003). 
 \bibitem{b5} Khasanov, Irmuhamedova, et al, ``Theoretical foundations of the structure formation of cement stone
 and concrete," IOP Conf. Series: Materials Science and Engineering 869 (2020)
