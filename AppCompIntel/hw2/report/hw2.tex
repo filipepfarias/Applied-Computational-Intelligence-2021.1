@@ -44,7 +44,7 @@ Regression models, Concrete compressive strength, Machine-learning.
 \end{IEEEkeywords}
 
 \section{Introduction}
-A material formed by aggregates bonded together by a fluid material that hardens over time has been used by humans for construction since many years ago\cite{b3}. Nowadays this material is known as concrete and it's widely used in the construction field. The aggregates used in the mixture of the concrete affect directly its compressive strength which highly impacts its applications. For instance, in general, the concrete for columns or beams needs to have a greater compressive strength than the one for pavement. On the previous work, we have made a statistical analysis on a dataset extracted from the UCI Machine Learning Repository (University of California, Irvine)\cite{b4} that collects information about the concentration of some aggregates used to form different mixtures of concretes. In this work, we try to find a regression model to estimate the relation between the concentration of those aggregates and the strength of the concrete mixture. The goal is that such model could be a good replacement to tests of samples on hydraulically press.
+A material formed by aggregates bonded together by a fluid material that hardens over time has been used by humans for construction since many years ago\cite{b3}. Nowadays this material is known as concrete and it's widely used in the construction field. The aggregates used in the mixture of the concrete affect directly its compressive strength which highly impacts its applications. For instance, in general, the concrete for columns or beams needs to have a greater compressive strength than the one for pavement. On the previous work, we have made a statistical analysis on a dataset extracted from the UCI Machine Learning Repository (University of California, Irvine)\cite{b4} that collects information about the concentration of some aggregates used to form different mixtures of concretes. In this work, we try to find a regression model to estimate the relation between the concentration of those aggregates and the strength of the concrete mixture. The goal is that such model could be a good replacement to tests of samples on hydraulic press.
 
 This work is divided as follows. A description of the data is given in Section~\ref{sec:data_description} resulted from the previous work with the addition of the regressor (concrete compressive strength). Section~\ref{sec:rm} brings a brief introduction to the regression models that will be used to fit the data. In the sequel, we present and discuss the results in Section~\ref{sec:results}. Finally, the conclusions and considerations are exposed in Section~\ref{sec:conclusions}.
 
@@ -143,30 +143,43 @@ Now what is done is to project the predictors into a lower-dimensional predictor
 \label{eq:pls}
 \end{equation}
 
-\section{Results}
+\section{Results} \label{sec:results}
 
-\begin{figure}[htbp]
-\centerline{\includegraphics[width=\columnwidth]{../figures/fitted_params_70}}
-\caption{Values of the angular coefficients of each predictor obtained after 30\%/70\% cross-validation strategy.}
-%\label{histogram_biplot}
-\end{figure}
+In this section, we present the results of fitting the \emph{Ordinary least squares}, the \emph{L\textsubscript{2}-penalized least squares} and the \emph{Partial least squares} in the data.
 
-\begin{figure}[htbp]
-\centerline{\includegraphics[width=\columnwidth]{../figures/fitted_params_kfolds}}
-\caption{Values of the angular coefficients of each predictor obtained after $5$-fold cross-validation strategy.}%\label{histogram_biplot}
-\end{figure}
+Tables~\ref{table:ols}-\ref{table:pls} summarize the values of RMSE and $R^2$ resulted from the fitting of the data by the linear models for the 70\% Train / 30\% Test and 5-fold cross-validation strategies. In all three tables, the smallest value of RMSE and the largest value of $R^2$ are highlighted on bold mode.
 
-\input{../tables/results_lr.tex}
+Since the values of $R^2$ are aproximatelly at most 66\%, none of the models could explain more than this value of the variance of the data. This result suggests that the relation between the predictors and the outcome is not linear, thus a non-linear model such as neural networks, as used by \cite{b4}, could yield to a better fitting. 
+
+Although the values of RMSE for the applied linear models are small, we should keep in mind that the data is normalised with mean 0 and variance 1. Therefore, in this situation an RMSE of 0.58 implies to an error of more than half the variance. However, the models with the smallest values of RMSE explained better the variance of the data.
+
+Figure~\ref{fig:angular_coefficients_1} and Figure~\ref{fig:angular_coefficients_2} show the values of the angular coefficients of each predictor obtained, respectively, after the 70\% Train / 30\% Test and 5-fold cross-validation strategies.
+
+\input{../tables/results_lr.tex} 
 
 \input{../tables/results_rr.tex}
 
 \input{../tables/results_pls.tex}
 
+\begin{figure}[h] 
+\centerline{\includegraphics[width=\columnwidth]{../figures/fitted_params_70}}
+\caption{Values of the angular coefficients of each predictor obtained after 30\%/70\% cross-validation strategy.}
+\label{fig:angular_coefficients_1}
+\end{figure}
+
+\begin{figure}[h]
+\centerline{\includegraphics[width=\columnwidth]{../figures/fitted_params_kfolds}}
+\caption{Values of the angular coefficients of each predictor obtained after $5$-fold cross-validation strategy.}
+\label{fig:angular_coefficients_2}
+\end{figure}
+
+
+
 \input{../tables/results_pls_variance.tex}
 
 \section{Conclusions}\label{sec:conclusions}
 
-The database of concrete is not easy to analyse if there is no previous knowledge about the problem of the components mixture. In none of the analysis the data have been shown as separable on the initially determined classes. The next step is to try to perform regression to model the compressive strength itself before trying to classify the samples. in the literature \cite{b6} is more common an analysis of the concrete data stratified by the Age, what was not done in this work and maybe the cause of poor correlations.
+% The database of concrete is not easy to analyse if there is no previous knowledge about the problem of the components mixture. In none of the analysis the data have been shown as separable on the initially determined classes. The next step is to try to perform regression to model the compressive strength itself before trying to classify the samples. in the literature \cite{b6} is more common an analysis of the concrete data stratified by the Age, what was not done in this work and maybe the cause of poor correlations.
 
 \begin{thebibliography}{00}
 \bibitem{b1} ACI Manual of Concrete Practice 2000, Part 1: Materials and General Properties of Concrete.  American Concrete Institute.  Farmington Hills, MI.
