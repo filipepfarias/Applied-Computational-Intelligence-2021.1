@@ -8,3 +8,6 @@
 
 - Some packages needs to be installed and this will throw an error asking you to ```add``` them.
 - The report is at ```\hw1\report\hw1.pdf```.
+
+## Homework 2 - (Finished)
+- The same instructions are valid. In this homework the linear regression in this work.
