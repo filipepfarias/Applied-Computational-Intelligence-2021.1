@@ -108,7 +108,7 @@ model_rr = RidgeRegressor(
         fit_intercept = true,
         solver = nothing);
 
-r = range(model_rr, :lambda, lower=1e-2, upper=100_000, scale=:log10);
+r = MLJBase.range(model_rr, :lambda, lower=1e-2, upper=100_000, scale=:log10);
 
 tuned_model_rr = TunedModel(
     model=model_rr, 
@@ -167,7 +167,7 @@ PLSRegressor = @load PLSRegressor pkg=PartialLeastSquaresRegressor verbosity=0
 
 model_pls = PLSRegressor();
 
-r = range(model_pls, :n_factors, lower=1, upper=8, scale=:linear);
+r = MLJBase.range(model_pls, :n_factors, lower=1, upper=8, scale=:linear);
 
 tuned_model_pls = TunedModel(
     model=model_pls, 
