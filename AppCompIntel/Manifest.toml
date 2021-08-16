@@ -550,6 +550,18 @@ git-tree-sha1 = "f6250b16881adf048549549fba48b1161acdac8c"
 uuid = "c1c5ebd0-6772-5130-a774-d5fcae4a789d"
 version = "3.100.1+0"
 
+[[LIBLINEAR]]
+deps = ["Libdl", "SparseArrays", "liblinear_jll"]
+git-tree-sha1 = "81e40115c23acca9dfa30944050096b958271e5a"
+uuid = "2d691ee1-e668-5016-a719-b2531b85e0f5"
+version = "0.6.0"
+
+[[LIBSVM]]
+deps = ["LIBLINEAR", "ScikitLearnBase", "SparseArrays", "libsvm_jll"]
+git-tree-sha1 = "01887525ee921ae3998270782160f0cdc0a42914"
+uuid = "b1bec4e5-fd48-53fe-b0cb-9723c09d164b"
+version = "0.6.0"
+
 [[LLVM]]
 deps = ["CEnum", "LLVMExtra_jll", "Libdl", "Printf", "Unicode"]
 git-tree-sha1 = "1b7ba36ea7aa6fa2278118951bad114fbb8359f2"
@@ -753,6 +765,12 @@ git-tree-sha1 = "f927564f7e295b3205f37186191c82720a3d93a5"
 uuid = "614be32b-d00c-4edb-bd02-1eb411ab5e55"
 version = "0.3.1"
 
+[[MLJLIBSVMInterface]]
+deps = ["LIBSVM", "MLJModelInterface", "Statistics"]
+git-tree-sha1 = "691e55ed71bf9a5dcec06ed4ca4ab46339b126ee"
+uuid = "61c7150f-6c77-4bb1-949c-13197eac2a52"
+version = "0.1.3"
+
 [[MLJLinearModels]]
 deps = ["DocStringExtensions", "IterativeSolvers", "LinearAlgebra", "LinearMaps", "MLJModelInterface", "Optim", "Parameters"]
 git-tree-sha1 = "80def5440202486eca67ac313e1c2d3c01836d99"
@@ -770,6 +788,12 @@ deps = ["CategoricalArrays", "Dates", "Distances", "Distributions", "Interactive
 git-tree-sha1 = "0b8b6edb9076fb237cdedec9a62b8512397a520f"
 uuid = "d491faf4-2d78-11e9-2867-c94bc002c0b7"
 version = "0.14.8"
+
+[[MLJMultivariateStatsInterface]]
+deps = ["Distances", "LinearAlgebra", "MLJModelInterface", "MultivariateStats", "StatsBase"]
+git-tree-sha1 = "0cfc81ff677ea13ed72894992ee9e5f8ae4dbb9d"
+uuid = "1b6a4a23-ba22-4f51-9698-8599985d3728"
+version = "0.2.2"
 
 [[MLJOpenML]]
 deps = ["HTTP", "JSON"]
@@ -883,6 +907,12 @@ version = "0.1.7"
 git-tree-sha1 = "bfe47e760d60b82b66b61d2d44128b62e3a369fb"
 uuid = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
 version = "0.3.5"
+
+[[NearestNeighborModels]]
+deps = ["Distances", "FillArrays", "InteractiveUtils", "LinearAlgebra", "MLJModelInterface", "NearestNeighbors", "Statistics", "StatsBase", "Tables"]
+git-tree-sha1 = "ae40740082d5d05ae6343241ad8fc5d592fd5fcf"
+uuid = "636a865e-7cf4-491e-846c-de09b730eb36"
+version = "0.1.6"
 
 [[NearestNeighbors]]
 deps = ["Distances", "StaticArrays"]
@@ -1159,6 +1189,12 @@ version = "2.0.0"
 git-tree-sha1 = "3f7ddb0cf0c3a4cff06d9df6f01135fa5442c99b"
 uuid = "30f210dd-8aff-4c5f-94ba-8e64358c1161"
 version = "1.0.0"
+
+[[ScikitLearnBase]]
+deps = ["LinearAlgebra", "Random", "Statistics"]
+git-tree-sha1 = "7877e55c1523a4b336b433da39c8e8c08d2f221f"
+uuid = "6e75b9c4-186b-50bd-896f-2d2496a4843e"
+version = "0.5.0"
 
 [[Scratch]]
 deps = ["Dates"]
@@ -1557,11 +1593,23 @@ git-tree-sha1 = "7a5780a0d9c6864184b3a2eeeb833a0c871f00ab"
 uuid = "f638f0a6-7fb0-5443-88ba-1cc74229b280"
 version = "0.1.6+4"
 
+[[liblinear_jll]]
+deps = ["Libdl", "Pkg"]
+git-tree-sha1 = "6a4a6a3697269cb2da57e698e9318972d88de0bb"
+uuid = "275f1f90-abd2-5ca1-9ad8-abd4e3d66eb7"
+version = "2.30.0+0"
+
 [[libpng_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Zlib_jll"]
 git-tree-sha1 = "94d180a6d2b5e55e447e2d27a29ed04fe79eb30c"
 uuid = "b53b4c65-9356-5827-b1ea-8c7a1a84506f"
 version = "1.6.38+0"
+
+[[libsvm_jll]]
+deps = ["CompilerSupportLibraries_jll", "Libdl", "Pkg"]
+git-tree-sha1 = "ac78676ee5b1707de969d68d0a39db71f222925d"
+uuid = "08558c22-525a-5d2a-acf6-0ac6658ffce4"
+version = "3.24.0+1"
 
 [[libvorbis_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Ogg_jll", "Pkg"]

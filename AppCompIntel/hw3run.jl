@@ -1,6 +1,5 @@
 # using Pkg
 # Pkg.activate(".")
-# To implement "NeuralNetworkRegressor,LDA,NeuralNetworkClassifier,KNNClassifier,LinearSVC"
 
 using Revise
 using AppCompIntel 
@@ -20,7 +19,7 @@ save_for_report = false;
 
 concrete_df = CSV.File(eval(@__DIR__)*"/data/Concrete_Data.csv", normalizenames=true) |> DataFrame;
 transform!(concrete_df, "Concrete_Compressive_Strength" => ByRow(strength -> get_category(strength)) => "Category");
-
+if false
 println("\nRunning Neural Network Linear Regression");
 
 results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
@@ -49,17 +48,17 @@ y = mapslices(col -> (col .- mean(col))/std(col),y; dims=1);
 # Implementing R² Statistics
 R²(ŷ, y) = 1 - sum((y.-ŷ).^2)/sum((y.-mean(y)).^2)
 
-# Import Linear Regression
-LinearNNRegressor = @load NeuralNetworkRegressor pkg=MLJFlux verbosity=0
+# Import Neural Network Regression
+NNRegressor = @load NeuralNetworkRegressor pkg=MLJFlux verbosity=0
 
-model_lnnr = LinearNNRegressor();
+model_nnr = NNRegressor();
 
 # Wraps model, predictor and outcome
-model_lnnr_machine = machine(model_lnnr, X, y);
+model_nnr_machine = machine(model_nnr, X, y);
 
-# Evaluate model performance for train set equals 70% of the total
-model_lnnr_summary_kfolds = evaluate!(
-    model_lnnr_machine,
+# Evaluate model performance for 5-folds
+model_nnr_summary_kfolds = evaluate!(
+    model_nnr_machine,
     resampling=CV(nfolds=5, rng=930),
     measure=[rmse, R²],
     verbosity=0
@@ -68,176 +67,199 @@ model_lnnr_summary_kfolds = evaluate!(
 append!(results,
     DataFrame(
         "CV" => string.([1; 2; 3; 4; 5]).*"-th fold",
-        "RMSE" =>  model_lnnr_summary_kfolds.per_fold[1],
-        "R²" => model_lnnr_summary_kfolds.per_fold[2]
+        "RMSE" =>  model_nnr_summary_kfolds.per_fold[1],
+        "R²" => model_nnr_summary_kfolds.per_fold[2]
     ));
 
 if save_for_report
     results = rename(results, "R²" => L"R^2");
 
     table = pretty_table(String, results; backend = Val(:latex),
-        highlighters = (h1, h2),title="Neural Network Linear Regression", nosubheader=true);
+        highlighters = (h1, h2),title="Neural Network Regression", nosubheader=true);
     
-    open("hw3/tables/results_lnnr.tex", "w") do io
+    open("hw3/tables/results_nnr.tex", "w") do io
         write(io, table)
     end; 
 else
-    pretty_table(results,highlighters = (h1, h2),title="Neural Network Linear Regression", crop = :none, nosubheader=true)
+    pretty_table(results,highlighters = (h1, h2),title="Neural Network Regression", crop = :none, nosubheader=true)
+end
 end
 
-# # Ridge Regression
-# println("\nRunning L²-penalised Linear (Ridge) Regression\n");
+# Ingesting data FOR CLASSIFICATION
+y, X = unpack(concrete_df,
+                ==(:Category), 
+                !=(:Concrete_Compressive_Strength);
+                :Category => Multiclass,
+                :Age => Continuous);
 
-# results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
+if false
+println("\nRunning Linear Discriminant Analysis Classification");
 
-# RidgeRegressor = @load RidgeRegressor pkg=MLJLinearModels verbosity=0
+results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
 
-# model_rr = RidgeRegressor(
-#         fit_intercept = true,
-#         solver = nothing);
+# Import Linea Discriminant Analysis
+LDAClassifier = @load LDA pkg=MultivariateStats verbosity=0
 
-# r = MLJBase.range(model_rr, :lambda, lower=1e-2, upper=100_000, scale=:log10);
+model_lda = LDAClassifier();
 
-# tuned_model_rr = TunedModel(
-#     model=model_rr, 
-#     ranges=r, 
-#     tuning=Grid(resolution=50),
-#     resampling=CV(nfolds=5, rng=930), 
-#     measure=rmse)
-   
-# # Wraps model, predictor and outcome
-# model_rr_machine = machine(tuned_model_rr, X, y);
+# Wraps model, predictor and outcome
+model_lda_machine = machine(model_lda, X, y);
 
-# # Evaluate model performance for train set equals 70% of the total
-# model_rr_summary_70 = evaluate!(
-#     model_rr_machine,
-#     resampling=Holdout(fraction_train=0.7, rng=930),
-#     measure=[rmse, R²],
-#     verbosity=0);
-
-# push!(results,[
-#     "70% Train / 30% Test" model_rr_summary_70.measurement[1] model_rr_summary_70.measurement[2]
-#     ]);
-
-# # Evaluate model performance for 5-folds
-# model_rr_summary_kfolds = evaluate!(
-#     model_rr_machine,
-#     resampling=CV(nfolds=5, rng=930),
-#     measure=[rmse, R²],
-#     verbosity=0);
+# Evaluate model performance for 5-folds
+model_lda_summary_kfolds = evaluate!(
+    model_lda_machine,
+    resampling=CV(nfolds=5, rng=930),
+    # measure=multiclass_positive_predictive_value,
+    # # verbosity=0,
+    # check_measure=false
+    );
 
 # append!(results,
 #     DataFrame(
 #         "CV" => string.([1; 2; 3; 4; 5]).*"-th fold",
-#         "RMSE" =>  model_rr_summary_kfolds.per_fold[1],
-#         "R²" => model_rr_summary_kfolds.per_fold[2]
+#         "RMSE" =>  model_lda_summary_kfolds.per_fold[1],
+#         "R²" => model_lda_summary_kfolds.per_fold[2]
 #     ));
 
-# if save_for_report
-#     results = rename(results, "R²" => L"R^2");
+if save_for_report
+    results = rename(results, "R²" => L"R^2");
 
-#     table = pretty_table(String, results; backend = Val(:latex),
-#         highlighters = (h1, h2),title="Ridge Regression");
-
-#     open("hw2/tables/results_rr.tex", "w") do io
-#         write(io, table)
-#     end;
-# else
-#     pretty_table(results,highlighters = (h1, h2),title="Ridge Regression", crop = :none)
-# end
-
-# # PLS model
-# println("\nRunning Partial Least Squares Regression\n");
-
-# results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
-
-# PLSRegressor = @load PLSRegressor pkg=PartialLeastSquaresRegressor verbosity=0
-
-# model_pls = PLSRegressor();
-
-# r = MLJBase.range(model_pls, :n_factors, lower=1, upper=8, scale=:linear);
-
-# tuned_model_pls = TunedModel(
-#     model=model_pls, 
-#     ranges=r, 
-#     tuning=Grid(resolution=8),
-#     resampling=CV(nfolds=5, rng=930), 
-#     measure=rmse);
-
-# # Wraps model, predictor and outcome
-# model_pls_machine = machine(tuned_model_pls, X, y);
-
-# # Evaluate model performance for train set equals 70% of the total
-# model_pls_summary_70 = evaluate!(
-#     model_pls_machine,
-#     resampling=Holdout(fraction_train=0.7, rng=930),
-#     measure=[rmse, R²],
-#     verbosity=0);
-
-# push!(results,[
-#     "70% Train / 30% Test" model_pls_summary_70.measurement[1] model_pls_summary_70.measurement[2]
-#     ]);
-
-# model_pls_summary_kfolds = evaluate!(
-#     model_pls_machine,
-#     resampling=CV(nfolds=5, rng=930),
-#     measure=[rmse, R²],
-#     verbosity=0);
-
-# append!(results,
-#     DataFrame(
-#         "CV" => string.([1; 2; 3; 4; 5]).*"-th fold",
-#         "RMSE" =>  model_pls_summary_kfolds.per_fold[1],
-#         "R²" => model_pls_summary_kfolds.per_fold[2]
-#     ));
-
-# if save_for_report
-#     results = rename(results, "R²" => L"R^2");
-
-#     table = pretty_table(String, results; backend = Val(:latex),
-#         highlighters = (h1, h2),title="PLS Regression");
-
-#     open("hw2/tables/results_pls.tex", "w") do io
-#         write(io, table)
-#     end;
-# else
-#     pretty_table(results,highlighters = (h1, h2),title="\nPLS Regression", crop = :none)
-# end
-
-# # Plots
-# if save_for_report
-#     # Correlation + Scatter + Histogram
-#     figure = scatterplot(select(concrete_df, Not(:Category)))
-#     savefig(figure,figure_path("correlation_predictors_outcomes.pdf"))
-
-#     figure = plot(map(p -> p.second,
-#         model_lr_summary_70.fitted_params_per_fold[1].coefs), 
-#         marker = :circle, markerstrokewidth=0.3 ,
-#         xticks = (1:8, latexstring.("D_" .* string.(1:8))), 
-#         label = "Linear Regression")
-#     figure = plot!(map(p -> p.second,
-#         model_rr_summary_70.fitted_params_per_fold[1].best_fitted_params[1]), 
-#         marker = :diamond, markerstrokewidth=0.3, 
-#         label = "L₂-Penalised",
-#         size=(360,180))
-#     savefig(figure,figure_path("fitted_params_70.pdf"))
+    table = pretty_table(String, results; backend = Val(:latex),
+        highlighters = (h1, h2),title="Linear Discriminant Analysis Classification", nosubheader=true);
     
-#     figure = plot(map(p -> p.second,
-#         model_lr_summary_kfolds.fitted_params_per_fold[end].coefs), 
-#         marker = :circle, markerstrokewidth=0.3, 
-#         xticks = (1:8, latexstring.("D_" .* string.(1:8))), 
-#         label = "Linear Regression")
-#     figure = plot!(map(p -> p.second,
-#         model_rr_summary_kfolds.fitted_params_per_fold[1].best_fitted_params[1]), 
-#         marker = :diamond, markerstrokewidth=0.3, 
-#         label = "L₂-Penalised",
-#         size=(360,180))
-#     savefig(figure,figure_path("fitted_params_kfolds.pdf"))
-# end
+    open("hw3/tables/results_lda.tex", "w") do io
+        write(io, table)
+    end; 
+else
+    pretty_table(results,highlighters = (h1, h2),title="Linear Discriminant Analysis Classification", crop = :none, nosubheader=true)
+end
+end
 
-# # To add:
+if false
+    println("\nRunning Neural Networks Classification");
+    
+    results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
+    
+    # Import Linea Discriminant Analysis
+    NNClassifier = @load NeuralNetworkClassifier pkg=MLJFlux verbosity=0
+    
+    model_nnc = NNClassifier();
+    
+    # Wraps model, predictor and outcome
+    model_nnc_machine = machine(model_nnc, X, y);
+    
+    # Evaluate model performance for 5-folds
+    model_nnc_summary_kfolds = evaluate!(
+        model_nnc_machine,
+        resampling=CV(nfolds=5, rng=930),
+        # measure=multiclass_positive_predictive_value,
+        # # verbosity=0,
+        # check_measure=false
+        );
+    
+    # append!(results,
+    #     DataFrame(
+    #         "CV" => string.([1; 2; 3; 4; 5]).*"-th fold",
+    #         "RMSE" =>  model_lda_summary_kfolds.per_fold[1],
+    #         "R²" => model_lda_summary_kfolds.per_fold[2]
+    #     ));
+    
+    if save_for_report
+        results = rename(results, "R²" => L"R^2");
+    
+        table = pretty_table(String, results; backend = Val(:latex),
+            highlighters = (h1, h2),title="Neural Networks Classification", nosubheader=true);
+        
+        open("hw3/tables/results_nnc.tex", "w") do io
+            write(io, table)
+        end; 
+    else
+        pretty_table(results,highlighters = (h1, h2),title="Neural Networks Classification", crop = :none, nosubheader=true)
+    end
+    end
 
-# # Variance explained
+    if false
+    println("\nRunning Nearest Neighbors Classification");
+    
+    results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
+    
+    # Import Linea Discriminant Analysis
+    KNNClassifier = @load KNNClassifier pkg=NearestNeighborModels verbosity=0
+    
+    model_knnc = KNNClassifier();
+    
+    # Wraps model, predictor and outcome
+    model_knnc_machine = machine(model_knnc, X, y);
+    
+    # Evaluate model performance for 5-folds
+    model_knnc_summary_kfolds = evaluate!(
+        model_knnc_machine,
+        resampling=CV(nfolds=5, rng=930),
+        # measure=multiclass_positive_predictive_value,
+        # # verbosity=0,
+        # check_measure=false
+        );
+    
+    # append!(results,
+    #     DataFrame(
+    #         "CV" => string.([1; 2; 3; 4; 5]).*"-th fold",
+    #         "RMSE" =>  model_lda_summary_kfolds.per_fold[1],
+    #         "R²" => model_lda_summary_kfolds.per_fold[2]
+    #     ));
+    
+    if save_for_report
+        results = rename(results, "R²" => L"R^2");
+    
+        table = pretty_table(String, results; backend = Val(:latex),
+            highlighters = (h1, h2),title="Nearest Neighbors Classification", nosubheader=true);
+        
+        open("hw3/tables/results_knnc.tex", "w") do io
+            write(io, table)
+        end; 
+    else
+        pretty_table(results,highlighters = (h1, h2),title="Nearest Neighbors Classification", crop = :none, nosubheader=true)
+    end
+    end
 
-# # P = model_pls_summary_kfolds.fitted_params_per_fold[1][2][1].P
-# # DataFrame("Principal Components" => "PC".*string.(1:8), "Variance Explained (%)" => round.((eigen(P*P').values) ./sum(eigen(P*P').values) * 100; digits=2 )[end:-1:1])
+    if true
+    println("\nRunning Support Vector Classification");
+    
+    results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
+    
+    # Import Linea Discriminant Analysis
+    SVCClassifier = @load SVC pkg=LIBSVM verbosity=0
+    
+    model_svc = SVCClassifier();
+    
+    # Wraps model, predictor and outcome
+    model_svc_machine = machine(model_svc, X, y);
+    
+    # Evaluate model performance for 5-folds
+    model_svc_summary_kfolds = evaluate!(
+        model_svc_machine,
+        resampling=CV(nfolds=5, rng=930),
+        # measure=multiclass_positive_predictive_value,
+        # # verbosity=0,
+        # check_measure=false
+        );
+    
+    # append!(results,
+    #     DataFrame(
+    #         "CV" => string.([1; 2; 3; 4; 5]).*"-th fold",
+    #         "RMSE" =>  model_lda_summary_kfolds.per_fold[1],
+    #         "R²" => model_lda_summary_kfolds.per_fold[2]
+    #     ));
+    
+    if save_for_report
+        results = rename(results, "R²" => L"R^2");
+    
+        table = pretty_table(String, results; backend = Val(:latex),
+            highlighters = (h1, h2),title="Support Vector Classification", nosubheader=true);
+        
+        open("hw3/tables/results_svc.tex", "w") do io
+            write(io, table)
+        end; 
+    else
+        pretty_table(results,highlighters = (h1, h2),title="Support Vector Classification", crop = :none, nosubheader=true)
+    end
+    end
