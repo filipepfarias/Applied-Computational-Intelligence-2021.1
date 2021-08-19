@@ -92,7 +92,7 @@ y, X = unpack(concrete_df,
                 :Category => Multiclass,
                 :Age => Continuous);
 
-if false
+if true
 println("\nRunning Linear Discriminant Analysis Classification");
 
 results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
@@ -109,7 +109,8 @@ model_lda_machine = machine(model_lda, X, y);
 model_lda_summary_kfolds = evaluate!(
     model_lda_machine,
     resampling=CV(nfolds=5, rng=930),
-    # measure=multiclass_positive_predictive_value,
+    measure=ConfusionMatrix(perm=[1,2,3]),
+    operation=predict_mode,
     # # verbosity=0,
     # check_measure=false
     );
@@ -135,7 +136,7 @@ else
 end
 end
 
-if false
+if true
     println("\nRunning Neural Networks Classification");
     
     results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
@@ -152,7 +153,8 @@ if false
     model_nnc_summary_kfolds = evaluate!(
         model_nnc_machine,
         resampling=CV(nfolds=5, rng=930),
-        # measure=multiclass_positive_predictive_value,
+        measure=ConfusionMatrix(perm=[1,2,3]),
+        operation=predict_mode,
         # # verbosity=0,
         # check_measure=false
         );
@@ -178,7 +180,7 @@ if false
     end
     end
 
-    if false
+    if true
     println("\nRunning Nearest Neighbors Classification");
     
     results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
@@ -195,7 +197,8 @@ if false
     model_knnc_summary_kfolds = evaluate!(
         model_knnc_machine,
         resampling=CV(nfolds=5, rng=930),
-        # measure=multiclass_positive_predictive_value,
+        measure=ConfusionMatrix(perm=[1,2,3]),
+        operation=predict_mode,
         # # verbosity=0,
         # check_measure=false
         );
@@ -238,7 +241,7 @@ if false
     model_svc_summary_kfolds = evaluate!(
         model_svc_machine,
         resampling=CV(nfolds=5, rng=930),
-        # measure=multiclass_positive_predictive_value,
+        measure=ConfusionMatrix(perm=[1,2,3]),
         # # verbosity=0,
         # check_measure=false
         );
