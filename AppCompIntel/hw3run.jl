@@ -10,7 +10,8 @@ using Statistics, StatsBase
 using Plots
 using Latexify, LaTeXStrings
 using MultivariateStats
-using MLJBase, MLJ
+using MLJBase, MLJ, MLJFlux
+using Flux
 
 println("\nRunning HW3");
 println("\nLoading Concrete dataset");
@@ -19,10 +20,6 @@ save_for_report = false;
 
 concrete_df = CSV.File(eval(@__DIR__)*"/data/Concrete_Data.csv", normalizenames=true) |> DataFrame;
 transform!(concrete_df, "Concrete_Compressive_Strength" => ByRow(strength -> get_category(strength)) => "Category");
-if false
-println("\nRunning Neural Network Regression");
-
-results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
 
 if save_for_report
     h1 = LatexHighlighter((data,i,j)->(data[i,j] == findmin(data[:, 2])[1]),
@@ -38,51 +35,58 @@ else
                         foreground = :cyan); 
 end
 
-# Ingesting data FOR REGRESSION
-y, X = unpack(concrete_df, ==(:Concrete_Compressive_Strength), !=(:Category))
+if true
+    println("\nRunning Neural Network Regression");
 
-# Normalizing data
-mapcols!(col -> (col .- mean(col))/std(col),X);
-y = mapslices(col -> (col .- mean(col))/std(col),y; dims=1);                
+    results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
 
-# Implementing R² Statistics
-R²(ŷ, y) = 1 - sum((y.-ŷ).^2)/sum((y.-mean(y)).^2)
+    # Ingesting data FOR REGRESSION
+    y, X = unpack(concrete_df, ==(:Concrete_Compressive_Strength), !=(:Category))
 
-# Import Neural Network Regression
-NNRegressor = @load NeuralNetworkRegressor pkg=MLJFlux verbosity=0
+    # Normalizing data
+    mapcols!(col -> (col .- mean(col))/std(col),X);
+    y = mapslices(col -> (col .- mean(col))/std(col),y; dims=1);                
 
-model_nnr = NNRegressor();
+    # Implementing R² Statistics
+    R²(ŷ, y) = 1 - sum((y.-ŷ).^2)/sum((y.-mean(y)).^2)
 
-# Wraps model, predictor and outcome
-model_nnr_machine = machine(model_nnr, X, y);
+    # Import Neural Network Regression
+    NNRegressor = @load NeuralNetworkRegressor pkg=MLJFlux verbosity=0
 
-# Evaluate model performance for 5-folds
-model_nnr_summary_kfolds = evaluate!(
-    model_nnr_machine,
-    resampling=CV(nfolds=5, rng=930),
-    measure=[rmse, R²],
-    verbosity=0
+    model_nnr = NNRegressor(
+        builder = MLJFlux.Linear(σ=Flux.sigmoid)
     );
 
-append!(results,
-    DataFrame(
-        "CV" => string.([1; 2; 3; 4; 5]).*"-th fold",
-        "RMSE" =>  model_nnr_summary_kfolds.per_fold[1],
-        "R²" => model_nnr_summary_kfolds.per_fold[2]
-    ));
+    # Wraps model, predictor and outcome
+    model_nnr_machine = machine(model_nnr, X, y);
 
-if save_for_report
-    results = rename(results, "R²" => L"R^2");
+    # Evaluate model performance for 5-folds
+    model_nnr_summary_kfolds = evaluate!(
+        model_nnr_machine,
+        resampling=CV(nfolds=5, rng=930),
+        measure=[rmse, R²],
+        verbosity=0
+        );
 
-    table = pretty_table(String, results; backend = Val(:latex),
-        highlighters = (h1, h2),title="Neural Network Regression", nosubheader=true);
-    
-    open("hw3/tables/results_nnr.tex", "w") do io
-        write(io, table)
-    end; 
-else
-    pretty_table(results,highlighters = (h1, h2),title="Neural Network Regression", crop = :none, nosubheader=true)
-end
+    append!(results,
+        DataFrame(
+            "CV" => string.([1; 2; 3; 4; 5]).*"-th fold",
+            "RMSE" =>  model_nnr_summary_kfolds.per_fold[1],
+            "R²" => model_nnr_summary_kfolds.per_fold[2]
+        ));
+
+    if save_for_report
+        results = rename(results, "R²" => L"R^2");
+
+        table = pretty_table(String, results; backend = Val(:latex),
+            highlighters = (h1, h2),title="Neural Network Regression", nosubheader=true);
+        
+        open("hw3/tables/results_nnr.tex", "w") do io
+            write(io, table)
+        end; 
+    else
+        pretty_table(results,highlighters = (h1, h2),title="Neural Network Regression", crop = :none, nosubheader=true)
+    end
 end
 
 # Ingesting data FOR CLASSIFICATION
@@ -92,51 +96,51 @@ y, X = unpack(concrete_df,
                 :Category => Multiclass,
                 :Age => Continuous);
 
-if true
-println("\nRunning Linear Discriminant Analysis Classification");
+if false
+    println("\nRunning Linear Discriminant Analysis Classification");
 
-results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
+    results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
 
-# Import Linea Discriminant Analysis
-LDAClassifier = @load LDA pkg=MultivariateStats verbosity=0
+    # Import Linea Discriminant Analysis
+    LDAClassifier = @load LDA pkg=MultivariateStats verbosity=0
 
-model_lda = LDAClassifier();
+    model_lda = LDAClassifier();
 
-# Wraps model, predictor and outcome
-model_lda_machine = machine(model_lda, X, y);
+    # Wraps model, predictor and outcome
+    model_lda_machine = machine(model_lda, X, y);
 
-# Evaluate model performance for 5-folds
-model_lda_summary_kfolds = evaluate!(
-    model_lda_machine,
-    resampling=CV(nfolds=5, rng=930),
-    measure=ConfusionMatrix(perm=[1,2,3]),
-    operation=predict_mode,
-    # # verbosity=0,
-    # check_measure=false
-    );
+    # Evaluate model performance for 5-folds
+    model_lda_summary_kfolds = evaluate!(
+        model_lda_machine,
+        resampling=CV(nfolds=5, rng=930),
+        measure=ConfusionMatrix(perm=[1,2,3]),
+        operation=predict_mode,
+        # # verbosity=0,
+        # check_measure=false
+        );
 
-# append!(results,
-#     DataFrame(
-#         "CV" => string.([1; 2; 3; 4; 5]).*"-th fold",
-#         "RMSE" =>  model_lda_summary_kfolds.per_fold[1],
-#         "R²" => model_lda_summary_kfolds.per_fold[2]
-#     ));
+    # append!(results,
+    #     DataFrame(
+    #         "CV" => string.([1; 2; 3; 4; 5]).*"-th fold",
+    #         "RMSE" =>  model_lda_summary_kfolds.per_fold[1],
+    #         "R²" => model_lda_summary_kfolds.per_fold[2]
+    #     ));
 
-if save_for_report
-    results = rename(results, "R²" => L"R^2");
+    if save_for_report
+        results = rename(results, "R²" => L"R^2");
 
-    table = pretty_table(String, results; backend = Val(:latex),
-        highlighters = (h1, h2),title="Linear Discriminant Analysis Classification", nosubheader=true);
-    
-    open("hw3/tables/results_lda.tex", "w") do io
-        write(io, table)
-    end; 
-else
-    pretty_table(results,highlighters = (h1, h2),title="Linear Discriminant Analysis Classification", crop = :none, nosubheader=true)
+        table = pretty_table(String, results; backend = Val(:latex),
+            highlighters = (h1, h2),title="Linear Discriminant Analysis Classification", nosubheader=true);
+        
+        open("hw3/tables/results_lda.tex", "w") do io
+            write(io, table)
+        end; 
+    else
+        pretty_table(results,highlighters = (h1, h2),title="Linear Discriminant Analysis Classification", crop = :none, nosubheader=true)
+    end
 end
-end
 
-if true
+if false
     println("\nRunning Neural Networks Classification");
     
     results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
@@ -180,7 +184,7 @@ if true
     end
     end
 
-    if true
+if false
     println("\nRunning Nearest Neighbors Classification");
     
     results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
@@ -224,7 +228,7 @@ if true
     end
     end
 
-    if true
+if false
     println("\nRunning Support Vector Classification");
     
     results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);

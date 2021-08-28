@@ -90,19 +90,23 @@ The observations are the measured compressive strengths of each sample and, as t
 
 \section{Regression models}\label{sec:rm}
 
-Regression models try to find relations between the \emph{independent variables} and the \emph{dependent variables}, which are named, respectively, predictors and outcomes in this work. These relations can occur in different forms. The simplest one is the linear relationship, which is when the curve predictors \textit{vs} outcomes, in the case that both are one-dimensional, forms a simple line and, in the general case, a hyperplane. {\color{red}In what follows, we formulate the \emph{Linear regression}, which is a subclass of regressions dedicated to find a linear model to explain the relation between the predictors and the outcomes. }
-
+Regression models try to find relations between the \emph{independent variables} and the \emph{dependent variables}, which are named, respectively, predictors and outcomes in this work. These relations can occur in different forms. The simplest one is the linear relationship, which is when the curve predictors \textit{vs} outcomes, in the case that both are one-dimensional, forms a simple line and, in the general case, a hyperplane. Continuing the discussion of the last work, we now change the strategy to use a non-linear method for regression, in this case using neural networks.
 
 \subsection{Neural networks regression}
 
-{\color{red}\begin{align} \label{eq:lm}   
-  Y &= \begin{bmatrix} 
-        \beta_0 & \boldsymbol{\beta}^\top 
-       \end{bmatrix} 
-       \begin{bmatrix} 
-        \mathbf{1} \\ X 
-      \end{bmatrix} + \varepsilon
-\end{align}} 
+In this method, expressed in Eq.\ref{eq:nn-reg}, each predictor $x_k$ is weighted by a real-valued constant $w_k$. The outcome is inputed in an activation function $\phi$ which will ``activate'' when that sum be enough to reach a given output $Y$. This output will be the data, specifically the value of the compressive strength.
+
+\begin{equation}\label{eq:nn-reg}
+Y = \phi \left( \sum_k w_k \cdot x_k \right)
+\end{equation}
+
+The shape of $\phi$ is a choose of the one who is modelling. Some of them are the sigmoid and the step functions. In this work, the ReLU function was used, which is defined as 
+
+\begin{equation}
+\phi_\text{ReLU}(x) = \operatorname{max}(0,x).
+\end{equation}
+
+The next step, which is to optimise a cost function is quite similar to the ordinary linear squares, but now observing that the function is different, but yet the cost will be defined as the distance between the data and the values of the model.
 
 \section{Classification models}
 
