@@ -137,8 +137,12 @@ The shape of $\phi$ is a choose of the one who is modelling. Some of them are th
 The next step, which is to optimise a cost function is quite similar to the ordinary linear squares, but now observing that the function is different, but yet the cost will be defined as the distance between the data and the values of the model.
 
 \section{Classification models}
+The regression models are used to fit output variables that are quantitative. But, in the majority of the applications, the output variables are qualitative instead, which means that classification models must be used to fit those variables. The classification models estimate the probability of the outcome $Y$ to belong to a class $y$ given a set of predictors $X$, i.e. the probability $Pr(Y=y|X)$.
+
+In this section, we briefly describe the classification models that were used throughout this paper.
 
 \subsection{Linear discriminant analysis}
+The linear discriminant analysis models the probability distribution of the predictors for each one of the outcome classes and applies the Bayes' theorem to them in order to estimate the probabilities $Pr(Y=y | X=x)$.
 
 \subsection{Neural networks}
 
