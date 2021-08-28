@@ -90,104 +90,31 @@ The observations are the measured compressive strengths of each sample and, as t
 
 \section{Regression models}\label{sec:rm}
 
-Regression models try to find relations between the \emph{independent variables} and the \emph{dependent variables}, which are named, respectively, predictors and outcomes in this work. These relations can occur in different forms. The simplest one is the linear relationship, which is when the curve predictors \textit{vs} outcomes, in the case that both are one-dimensional, forms a simple line and, in the general case, a hyperplane. In what follows, we formulate the \emph{Linear regression}, which is a subclass of regressions dedicated to find a linear model to explain the relation between the predictors and the outcomes. 
+Regression models try to find relations between the \emph{independent variables} and the \emph{dependent variables}, which are named, respectively, predictors and outcomes in this work. These relations can occur in different forms. The simplest one is the linear relationship, which is when the curve predictors \textit{vs} outcomes, in the case that both are one-dimensional, forms a simple line and, in the general case, a hyperplane. {\color{red}In what follows, we formulate the \emph{Linear regression}, which is a subclass of regressions dedicated to find a linear model to explain the relation between the predictors and the outcomes. }
 
 
-\subsection{Linear regression}
+\subsection{Neural networks regression}
 
-\begin{align} \label{eq:lm}   
+{\color{red}\begin{align} \label{eq:lm}   
   Y &= \begin{bmatrix} 
         \beta_0 & \boldsymbol{\beta}^\top 
        \end{bmatrix} 
        \begin{bmatrix} 
         \mathbf{1} \\ X 
       \end{bmatrix} + \varepsilon
-\end{align} 
+\end{align}} 
 
-This method tries to find the linear regression between the predictors and outcomes by fitting a line with linear coefficient $\boldsymbol{\beta}$ and angular coefficient $\boldsymbol{\beta}$, defined in Eq.~(\ref{eq:lm}), through the data. $\boldsymbol{\beta}$ is the size such as the number of predictors in $X$, in the way we can define the vector $\boldsymbol{\beta} = [\beta_0, ..., \beta_D]^\top$. Wrapping up $[\beta_0 \ \boldsymbol{\beta}]^\top$ is a $1\times (D+1)$, $\mathbf{x} = [\mathbf{1} \ X]^\top$ is a $(N+1)\times D$ matrix and $Y$ is a $N\times 1$ matrix. For limitations on the implementation, it was adopted the label $D_9$ for the outcome, then the dimension $D$ of the matrices must be considered without the outcome component, that is 8 components.
+\section{Classification models}
 
-The fitting, i.e. finding the values for each of the linear and angular coefficients, is done by minimising a cost function that can take different forms. Each cost function yields to different optimal parameters and two of them are described in the following, the \emph{Ordinary least squares} and \emph{L\textsubscript{2}-penalized least squares}. An interesting fact to observe is when the predictors correlates with the outcome, we can observe the error will be small. This is because the correlation evaluates linear variations between the variables as such as the linear regression.
+\subsection{Linear discriminant analysis}
 
-The \emph{Ordinary least squares} defines the cost function to find the optimal parameters for Eq.~(\ref{eq:lm}) as
+\subsection{Neural networks}
 
-\begin{equation}\label{eq:cf_ols}
-  L(Y, \boldsymbol{\beta}) =\sum_{i=1}^{n}\left(y_{i}-\beta_{0}-\sum_{j=1}^{p} \beta_{j} x_{i j}\right)^{2}.
-\end{equation}
-%
-This cost function represents a quadratic distance between the model, i.e. the linear combination of the coefficients and the data. We have the minimal distance, we obtain the best model. This minimisation can be done by differentiating Eq. (\ref{eq:cf_ols}) w.r.t. the $\beta$'s giving the coefficients $\hat{\boldsymbol{\beta}}$ of the best model by
-%
-\[
-\hat{\boldsymbol{\beta}} = (\mathbf{x}^\top\mathbf{x})^{-1}\mathbf{x}^\top Y.
-\]
+\subsection{Nearest neighbors}
 
-The \emph{L\textsubscript{2}-penalized least squares} modifies Eq.~(\ref{eq:cf_ols}) adding a term that penalize large values of the parameters, yielding to
-
-\begin{equation}
-  L(\mathbf{y}, \boldsymbol{\beta}) = \sum_{i=1}^{n}\left(y_{i}-\beta_{0}-\sum_{j=1}^{p} \beta_{j} x_{i j}\right)^{2}+\lambda \sum_{j=1}^{p} \beta_{j}^{2},
-\end{equation}
-%
-where $\lambda$ is the penalisation coefficient, a tuning parameter. Different from ordinary least squares, we find $\lambda$ such the model will be the best one with \emph{cross-validation}. The values of the coefficients for a given $\lambda$ is 
-%
-\[
-\hat{\boldsymbol{\beta}} = (\mathbf{x}^\top\mathbf{x} + \lambda I)^{-1}\mathbf{x}^\top Y.
-\]
-
-\subsection{Partial least squares}
-
-The idea of the partial least squares (PLS) is in the same line of the previous linear regression of Eq. (\ref{eq:cf_ols}). But when $\mathbf{x}$ is \emph{ill-conditioned}, i.e. the features are strongly correlated \cite{b7}. In terms of the linear algebra theory, our matrix can have lines (rows or columns) that are scaled versions of each other hence it is rank deficient.
-
-Now what is done is to project the predictors into a lower-dimensional predictors space, in such way that the resulting ``new predictors'' are a linear combination of the original ones. Then we do the regression using this new predictors. This projection is done also considering the information of $Y$ and not just obtaining the space which $\mathbf{x}$ has its variance maximised as in \emph{principal component regression} (PCR). In PLS we need to find $\mathbf{w}$ and $\mathbf{c}$ in Eq. (\ref{eq:pls}) to create a linear combination to consider that information of $Y$ in a such way that we obtain the maximum covariance. The process of finding these matrices is iterative and described by Indahl \cite{b8}.
-%
-\begin{equation}
-\mathbf{t} = \mathbf{x}\mathbf{w}\ \text{and}\ \mathbf{u}=Y\mathbf{c}\ \text{with}\ \textbf{w}^\top\textbf{w}=\textbf{t}^\top\textbf{t}=1.
-\label{eq:pls}
-\end{equation}
+\subsection{Support vector classifier}
 
 \section{Results} \label{sec:results}
-
-In this section, we present the results of fitting the \emph{Ordinary least squares}, the \emph{L\textsubscript{2}-penalized least squares} and the \emph{Partial least squares} in the data. Each one of the methods was subjected to 70\% Train / 30\% Test and 5-fold cross-validation strategies. In the first, 70\% of the data was used to train the models and the rest for test. In the 5-fold the data was folded into 5 groups equally divided and one of them was selected as test group and the others as training groups. This step was repeated until all of the 5 groups were used for test.
-
-%
-\input{../tables/results_lr.tex} 
-%
-\input{../tables/results_rr.tex}
-%
-\input{../tables/results_pls.tex}
-
-Tables~\ref{table:ols},\ref{table:pls} and \ref{table:ridge} summarise the values of RMSE and $R^2$ resulted from the fitting of the data by the linear models for the 70\% Train / 30\% Test and 5-fold cross-validation strategies. In all three tables, the smallest value of RMSE and the largest value of $R^2$ are highlighted.
-
-Since the values of $R^2$ are approximately at most 66\%, none of the models could explain more than this value of the variance of the data. This result suggests that the relation between the predictors and the outcome is not linear, thus a non-linear model such as neural networks, as used by \cite{b4}, could yield to a better fitting. 
-
-Although the values of RMSE for the applied linear models are small, we should keep in mind that the data is normalised with mean 0 and variance 1. Therefore, in this situation an RMSE of 0.58 implies to an error of more than half the variance. However, the models with the smallest values of RMSE explained better the variance of the data.
-
-Figure~\ref{fig:angular_coefficients_1} and Figure~\ref{fig:angular_coefficients_2} show the values of the angular coefficients of each predictor obtained, respectively, using the 70\% Train / 30\% Test and 5-fold cross-validation strategies. Notice the highest value of the coefficient is of the Cement $D_1$ and the smaller one the Water $D_4$. To point some real world meaningful relation to this, some previous study on the specifics of theses components is needed, but some literatures \cite{b1} refers at least to the cement as the most important compound to the strength of the concrete. But some knowledge needs to be applied because this increase in the amount of cement is bounded, then this do not always leads to a better strength value\cite{b4}.
-%
-\begin{figure}[!h] 
-  \centerline{\includegraphics[width=0.8\columnwidth]{../figures/fitted_params_70}}
-  \caption{Values of the angular coefficients of each predictor obtained after 30\%/70\% cross-validation strategy.}
-  \label{fig:angular_coefficients_1}
-  \end{figure}
-  %
-  \begin{figure}[!h]
-  \centerline{\includegraphics[width=0.8\columnwidth]{../figures/fitted_params_kfolds}}
-  \caption{Values of the angular coefficients of each predictor obtained after $5$-fold cross-validation strategy.}
-  \label{fig:angular_coefficients_2}
-  \vskip-5pt
-\end{figure}
-
-For the $L_2$-penalized model, the $\lambda$ founded was $0.71968$ for the minimum RMSE. The values of RMSE for the $\lambda$ values evaluated are on Fig. \ref{fig:L2_lambda} in which we note the model looses its flexibility with the increase of $\lambda$ leading to a greater error.
-%
-\input{../tables/results_pls_variance.tex}
-
-\begin{figure}[!h] 
-\centerline{\includegraphics[width=0.8\columnwidth]{../figures/L2_lambda}}
-\caption{RMSE ($y$-axis) values for $\lambda$ ($x$-axis) parameter of the $L_2$-penalized least squares.}
-\label{fig:L2_lambda}
-\end{figure}
-
-The same intuition can not be done for the PLS results in the \autoref{table:pls-variance} given the space of its regression is another from the one the same as the compounds of the concrete are known. But a similar result to the previous work in which the explained variance is more disperse in the other principal components is noticed. 
-
-The same analysis made for the summaries of the previous models can be applied to the PLS which the results are in \autoref{table:pls-variance}. The model was trained under the same cross-validation strategies yielding to the best model found with the 8 PC's used.
 
 \section{Conclusions}\label{sec:conclusions}
 
@@ -199,8 +126,6 @@ The database of concrete is not easy to analyse if there is no previous knowledg
 \bibitem{b2} Tibshirani, Robert, et al. The Elements of  Statistical Learning:  Data Mining, Inference, and Prediction. Germany, Springer New York, 2009.
 \bibitem{b3} Mindess, S., and Young, J.F. Concrete. Prentice-Hall, Inc., Englewood Cliffs, NJ, 1981.
 \bibitem{b4} I-Cheng Yeh, ``Modeling of strength of high performance concrete using artificial neural networks," Cement and Concrete Research, Vol. 28, No. 12, pp. 1797-1808 (1998)
-\bibitem{b7} Abdi, Hervé, ``Partial least squares regression and projection on latent structure regression (PLS Regression),'' WIREs Computational Statistics, 2010-01-01 2(1): 97-106.
-\bibitem{b8} Ulf G. Indahl, ``The geometry of PLS1 explained properly: 10 key notes on mathematical properties of and some alternative algorithmic approaches to PLS1 modelling,'' Journal of Chemometrics, 2013.
 \bibitem{b6} I-Cheng Yeh, ``Prediction of Strength of Fly Ash and Slag Concrete By The Use of Artificial Neural Networks," Journal of the Chinese Institute of Civil and Hydraulic Engineering, Vol. 15, No. 4, pp. 659-663 (2003). 
 \bibitem{b5} Khasanov, Irmuhamedova, et al, ``Theoretical foundations of the structure formation of cement stone
 and concrete," IOP Conf. Series: Materials Science and Engineering 869 (2020)

@@ -20,7 +20,7 @@ save_for_report = false;
 concrete_df = CSV.File(eval(@__DIR__)*"/data/Concrete_Data.csv", normalizenames=true) |> DataFrame;
 transform!(concrete_df, "Concrete_Compressive_Strength" => ByRow(strength -> get_category(strength)) => "Category");
 if false
-println("\nRunning Neural Network Linear Regression");
+println("\nRunning Neural Network Regression");
 
 results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
 
