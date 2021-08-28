@@ -1,10 +1,10 @@
 function get_category(strength)
     if strength < 25 # Non-standard -> https://www.baseconcrete.co.uk/different-types-of-concrete-grades-and-their-uses/
-        return 1
+        return "L1"
     elseif 25 <= strength < 50 # Standard
-        return 2
+        return "L2"
     elseif  50 <= strength # High Strength
-        return 3
+        return "L3"
     end
 end
 
