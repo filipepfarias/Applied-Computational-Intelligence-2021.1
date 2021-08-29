@@ -96,7 +96,7 @@ y, X = unpack(concrete_df,
                 :Category => Multiclass,
                 :Age => Continuous);
 
-if false
+if true
     println("\nRunning Linear Discriminant Analysis Classification");
 
     results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
@@ -140,7 +140,7 @@ if false
     end
 end
 
-if false
+if true
     println("\nRunning Neural Networks Classification");
     
     results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
@@ -184,7 +184,7 @@ if false
     end
     end
 
-if false
+if true
     println("\nRunning Nearest Neighbors Classification");
     
     results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
@@ -228,7 +228,7 @@ if false
     end
     end
 
-if false
+if true
     println("\nRunning Support Vector Classification");
     
     results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
