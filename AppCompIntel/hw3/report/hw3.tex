@@ -6,7 +6,7 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{algorithmic}
 \usepackage{graphicx}
-\usepackage{booktabs}
+\usepackage{booktabs,multirow}
 \usepackage{textcomp}
 \usepackage{xcolor}
 
@@ -109,11 +109,12 @@ The concrete mixtures were divided into a set $\mathcal{L} = \{L_1\,, L_2\,, L_3
 %
 where $D_9$ is the compressive strength of the concrete mixture.
 
-The observations are the measured compressive strengths of each sample and, as the predictors $D_1 - D_7$, are real valued. The Age ($D_8$) of the concrete is extremely discrete. All the data was normalised, by centering at the mean and scaling by the standard deviation to avoid any of the methods to be sensitive to different scales. At Fig. \ref{histogram_biplot} we note the strongest positive correlation is between the strength and the cement component ($D_9 \times D_1$). Another important factors are the presence of the superplasticizer ($D_9 \times D_5$) and the age that represents the time of cure ($D_9 \times D_8$). In all these components is noted a subtle correlation. And the most important fact that can be observed is the decrease of the necessity of water when the superplasticizer is used ($D_5 \times D_4$), which was its proposal in the first place.
+The observations are the measured compressive strengths of each sample and, as the predictors $D_1 - D_7$, are real valued. The Age ($D_8$) of the concrete is extremely discrete. At Fig. \ref{boxplot_corr_predictors} we show the separation between the classes by their means and variances. These predictors were chosen because they are the ones with the major correlation with the compressive strength, in absolute terms, as presented in the previous work. We note that this separation is not clear, then another techniques being needed, using all the predictors in order to try to separate the classes.
+
 \begin{figure}[htbp]
-\centerline{\includegraphics[width=\columnwidth]{../figures/correlation_predictors_outcomes}}
-\caption{Pairwise scatter, correlation and histogram plots of each concrete component.}
-\label{histogram_biplot}
+\centerline{\includegraphics[width=\columnwidth]{../figures/most_corr_predictors}}
+\caption{Boxplot of each class for the concentration of cement, superplasticizer and the time of cure (age).}
+\label{boxplot_corr_predictors}
 \end{figure}
 
 \section{Regression models}\label{sec:rm}
@@ -155,6 +156,11 @@ The linear discriminant analysis models the probability distribution of the pred
 \subsection{Support vector classifier}
 
 \section{Results} \label{sec:results}
+
+\input{../tables/results_lda.tex}
+\input{../tables/results_nnc.tex}
+\input{../tables/results_knnc.tex}
+\input{../tables/results_svc.tex}
 
 \section{Conclusions}\label{sec:conclusions}
 
