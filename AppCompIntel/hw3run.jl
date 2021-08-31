@@ -6,7 +6,7 @@ using AppCompIntel
 using CSV
 using DataFrames
 using PrettyTables
-using Statistics, StatsBase
+using Statistics, StatsBase, StatsPlots
 using Plots
 using Latexify, LaTeXStrings
 using MultivariateStats
@@ -42,6 +42,8 @@ results = DataFrame(["CV" => [], "RMSE" => [], "R²" => []]);
 # Ingesting data FOR REGRESSION
 y, X = unpack(concrete_df, ==(:Concrete_Compressive_Strength), !=(:Category))
 
+y_mean,y_std = mean(y),std(y)
+
 # Normalizing data
 mapcols!(col -> (col .- mean(col))/std(col),X);
 y = mapslices(col -> (col .- mean(col))/std(col),y; dims=1);                
@@ -70,7 +72,7 @@ model_nnr_summary_kfolds = evaluate!(
 append!(results,
     DataFrame(
         "CV" => string.([1; 2; 3; 4; 5]).*"-th fold",
-        "RMSE" =>  model_nnr_summary_kfolds.per_fold[1],
+        "RMSE" =>  (model_nnr_summary_kfolds.per_fold[1] .+ y_mean)*y_std,
         "R²" => model_nnr_summary_kfolds.per_fold[2]
     ));
 
@@ -84,6 +86,7 @@ if save_for_report
         write(io, table)
     end; 
 else
+    println("\nFor E[y] = "*string(y_mean)*" and Var[y] = "*string(y_std))
     pretty_table(results,highlighters = (h1, h2),title="Neural Network Regression", crop = :none, nosubheader=true)
 end
 
@@ -94,7 +97,7 @@ y, X = unpack(concrete_df,
                 :Category => Multiclass,
                 :Age => Continuous);
 
-if true
+if false
     f1 = @df concrete_df boxplot(:Category,cols([1]), title="Cement", legend=false)
     f2 = @df concrete_df boxplot(:Category,cols([5]), title="Superplasticizer", legend=false)
     f3 = @df concrete_df boxplot(:Category,cols([8]), title="Age", legend=false)
@@ -102,122 +105,92 @@ if true
     savefig(f,"hw3/figures/most_corr_predictors.pdf");
 end
 
-println("\nRunning Linear Discriminant Analysis Classification");
+# println("\nRunning Linear Discriminant Analysis Classification");
 
-# Import Linear Discriminant Analysis
-LDAClassifier = @load LDA pkg=MultivariateStats verbosity=0
+# # Import Linear Discriminant Analysis
+# LDAClassifier = @load LDA pkg=MultivariateStats verbosity=0
 
-model_lda = LDAClassifier();
+# model_lda = LDAClassifier();
 
-# Wraps model, predictor and outcome
-model_lda_machine = machine(model_lda, X, y);
+# # Wraps model, predictor and outcome
+# model_lda_machine = machine(model_lda, X, y);
 
-# Evaluate model performance for 5-folds
-model_lda_summary_kfolds = evaluate!(
-    model_lda_machine,
-    resampling=CV(nfolds=5, rng=930),
-    measure=ConfusionMatrix(perm=[1,2,3]),
-    operation=predict_mode
-    );
+# # Evaluate model performance for 5-folds
+# model_lda_summary_kfolds = evaluate!(
+#     model_lda_machine,
+#     resampling=CV(nfolds=5, rng=930),
+#     measure=ConfusionMatrix(perm=[1,2,3]),
+#     operation=predict_mode
+#     );
 
-results = model_lda_summary_kfolds.measurement[1];
-if save_for_report
-    table = pretty_table(String, results.mat; backend = Val(:latex), header = results.labels,
-        title="Linear Discriminant Analysis Classification", nosubheader=true);
+# results = model_lda_summary_kfolds.measurement[1];
+# if save_for_report
+#     table = pretty_table(String, results.mat; backend = Val(:latex), header = results.labels,
+#         title="Linear Discriminant Analysis Classification", nosubheader=true);
     
-    open("hw3/tables/results_lda.tex", "w") do io
-        write(io, table)
-    end; 
-else
-    pretty_table(results.mat,title="Linear Discriminant Analysis Classification", crop = :none, nosubheader=true, header = results.labels)
-end
+#     open("hw3/tables/results_lda.tex", "w") do io
+#         write(io, table)
+#     end; 
+# else
+#     pretty_table(results.mat,title="Linear Discriminant Analysis Classification", crop = :none, nosubheader=true, header = results.labels)
+# end
 
-println("\nRunning Neural Networks Classification");
+# println("\nRunning Nearest Neighbors Classification");
 
-# Import Neural Networks Classifier
-NNClassifier = @load NeuralNetworkClassifier pkg=MLJFlux verbosity=0
 
-model_nnc = NNClassifier();
+# # Import Linea Discriminant Analysis
+# KNNClassifier = @load KNNClassifier pkg=NearestNeighborModels verbosity=0
 
-# Wraps model, predictor and outcome
-model_nnc_machine = machine(model_nnc, X, y);
+# model_knnc = KNNClassifier();
 
-# Evaluate model performance for 5-folds
-model_nnc_summary_kfolds = evaluate!(
-    model_nnc_machine,
-    resampling=CV(nfolds=5, rng=930),
-    measure=ConfusionMatrix(perm=[1,2,3]),
-    operation=predict_mode
-    );
+# # Wraps model, predictor and outcome
+# model_knnc_machine = machine(model_knnc, X, y);
 
-results = model_nnc_summary_kfolds.measurement[1];
-if save_for_report
-    table = pretty_table(String, results.mat; backend = Val(:latex), header = results.labels,
-        title="Neural Networks Classification", nosubheader=true);
+# # Evaluate model performance for 5-folds
+# model_knnc_summary_kfolds = evaluate!(
+#     model_knnc_machine,
+#     resampling=CV(nfolds=5, rng=930),
+#     measure=ConfusionMatrix(perm=[1,2,3]),
+#     operation=predict_mode
+#     );
+
+# results = model_knnc_summary_kfolds.measurement[1];
+# if save_for_report
+#     table = pretty_table(String, results.mat; backend = Val(:latex), header = results.labels,
+#         title="Nearest Neighbors Classification", nosubheader=true);
     
-    open("hw3/tables/results_nnc.tex", "w") do io
-        write(io, table)
-    end; 
-else
-    pretty_table(results.mat,title="Neural Networks Classification", crop = :none, nosubheader=true, header = results.labels)
-end
+#     open("hw3/tables/results_knnc.tex", "w") do io
+#         write(io, table)
+#     end; 
+# else
+#     pretty_table(results.mat,title="Nearest Neighbors Classification", crop = :none, nosubheader=true, header = results.labels)
+# end
 
-println("\nRunning Nearest Neighbors Classification");
+# println("\nRunning Support Vector Classification");
 
+# # Import Linea Discriminant Analysis
+# SVCClassifier = @load SVC pkg=LIBSVM verbosity=0
 
-# Import Linea Discriminant Analysis
-KNNClassifier = @load KNNClassifier pkg=NearestNeighborModels verbosity=0
+# model_svc = SVCClassifier();
 
-model_knnc = KNNClassifier();
+# # Wraps model, predictor and outcome
+# model_svc_machine = machine(model_svc, X, y);
 
-# Wraps model, predictor and outcome
-model_knnc_machine = machine(model_knnc, X, y);
+# # Evaluate model performance for 5-folds
+# model_svc_summary_kfolds = evaluate!(
+#     model_svc_machine,
+#     resampling=CV(nfolds=5, rng=930),
+#     measure=ConfusionMatrix(perm=[1,2,3])
+#     );
 
-# Evaluate model performance for 5-folds
-model_knnc_summary_kfolds = evaluate!(
-    model_knnc_machine,
-    resampling=CV(nfolds=5, rng=930),
-    measure=ConfusionMatrix(perm=[1,2,3]),
-    operation=predict_mode
-    );
-
-results = model_knnc_summary_kfolds.measurement[1];
-if save_for_report
-    table = pretty_table(String, results.mat; backend = Val(:latex), header = results.labels,
-        title="Nearest Neighbors Classification", nosubheader=true);
+# results = model_svc_summary_kfolds.measurement[1];
+# if save_for_report
+#     table = pretty_table(String, results.mat; backend = Val(:latex), header = results.labels,
+#         title="Support Vector Classification", nosubheader=true);
     
-    open("hw3/tables/results_knnc.tex", "w") do io
-        write(io, table)
-    end; 
-else
-    pretty_table(results.mat,title="Nearest Neighbors Classification", crop = :none, nosubheader=true, header = results.labels)
-end
-
-println("\nRunning Support Vector Classification");
-
-# Import Linea Discriminant Analysis
-SVCClassifier = @load SVC pkg=LIBSVM verbosity=0
-
-model_svc = SVCClassifier();
-
-# Wraps model, predictor and outcome
-model_svc_machine = machine(model_svc, X, y);
-
-# Evaluate model performance for 5-folds
-model_svc_summary_kfolds = evaluate!(
-    model_svc_machine,
-    resampling=CV(nfolds=5, rng=930),
-    measure=ConfusionMatrix(perm=[1,2,3])
-    );
-
-results = model_svc_summary_kfolds.measurement[1];
-if save_for_report
-    table = pretty_table(String, results.mat; backend = Val(:latex), header = results.labels,
-        title="Support Vector Classification", nosubheader=true);
-    
-    open("hw3/tables/results_svc.tex", "w") do io
-        write(io, table)
-    end; 
-else
-    pretty_table(results.mat,title="Support Vector Classification", crop = :none, nosubheader=true, header = results.labels)
-end
+#     open("hw3/tables/results_svc.tex", "w") do io
+#         write(io, table)
+#     end; 
+# else
+#     pretty_table(results.mat,title="Support Vector Classification", crop = :none, nosubheader=true, header = results.labels)
+# end
