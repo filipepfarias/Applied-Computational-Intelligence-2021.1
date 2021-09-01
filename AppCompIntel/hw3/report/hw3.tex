@@ -158,7 +158,7 @@ The support vector machine (SVM) classifier constructs a set of hyperplanes that
 \begin{figure}
   \centering
   \includegraphics[width=0.8\columnwidth]{../figures/esl_9_5_left}
-  \caption{Hyperplane dividing the samples into two classes. Source: adapted from \cite{james2013}.}
+  \caption{Hyperplane dividing the samples into two classes. Source: extracted from \cite{james2013}.}
   \label{fig:svm}
 \end{figure}
 
@@ -169,24 +169,90 @@ The $k$-nearest neighbors (KNN) classifier designates the class of a sample as t
 \begin{figure}
   \centering
   \includegraphics[width=\columnwidth]{../figures/esl_2_14}
-  \caption{Example of the KNN classifier with $k=3$. Left: illustration of a classless sample and its neighborhood. Right: illustration of the boundary for the data considering this KNN classifier. Source: from \cite{james2013}.}
+  \caption{Example of the KNN classifier with $k=3$. Left: illustration of a classless sample and its neighborhood. Right: illustration of the boundary for the data considering this KNN classifier. Source: extracted from \cite{james2013}.}
   \label{fig:knn}
 \end{figure}
 
-\subsection{Neural networks}
-
-
 \section{Results} \label{sec:results}
 
-\input{../tables/results_lda.tex}
-\input{../tables/results_nnc.tex}
-\input{../tables/results_knnc.tex}
-\input{../tables/results_svc.tex}
+\begin{table}
+\centering
+  \caption{Confusion matrix for the KNN classifier}
+  \label{tab:conf_mat_knn}
+  \begin{tabular}{rrrrr}
+    \toprule
+    & &\multicolumn{3}{c}{True Values}\\
+    & & ${L_1}$ & ${L_2}$ & ${L_3}$ \\
+    \multirow{3}{*}{Predicted} & ${L_1}$ & 292 (28.3495\%) & 0 (0.0\%) & 0 (0.0\%) \\
+    & ${L_2}$ & 2 (0.19\%) & 523 (50.8\%) & 2 (0.16\%) \\
+    & ${L_3}$ & 1 (0.097\%) & 2 (0.19\%) & 208 (20.2\%) \\\bottomrule
+  \end{tabular}
+\end{table}
+\begin{table}
+\centering
+ \caption{Performance metrics for the KNN classifier}  
+ \label{tab:perf_met_knn}
+ \begin{tabular}{rrrrr}    \hline\hline    \textbf{Class} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 score} \\ \hline    L1 & 0.997087 & 1.0 & 0.989831 & 0.994889 \\\     L2 & 0.994175 & 0.99241 & 0.99619 & 0.994297 \\     L3 & 0.995146 & 0.985782 & 0.990476 & 0.988124 \\ \hline\hline  \end{tabular}
+\end{table}
+
+The results were obtained from the models with neural networks regression and $k$-nearest neighbors after 5-fold cross validation. For KNN, was obtained that for $k=5$ we have the performances at the Tab. \ref{tab:conf_mat_knn} and Tab. \ref{tab:perf_met_knn}. We can observe that the KNN method, we obtain $99\%$ of the accuracy, which represents a low rato of false classifications among the true ones. The $98\%$ of recall represents that the the method barely loses a true positive classification. To finish, it was obtained about of $99\%$ of $F_1$-score which is the harmonic mean between the precision and the recall.
+
+\begin{table}
+\centering
+  \caption{Confusion matrix for the SVM Classifier}
+  \label{tab:conf_mat_svc}
+  \begin{tabular}{rrrrr}
+    \toprule
+    & &\multicolumn{3}{c}{True Values}\\
+    & & ${L_1}$ & ${L_2}$ & ${L_3}$ \\
+    \multirow{3}{*}{Predicted} & ${L_1}$ & 149 (14.5\%) & 23 (2.2\%) & 0 (0.0\%) \\
+    & ${L_2}$ & 146 (14.2\%) & 491 (47.7\%) & 169 (16.4\%) \\
+    & ${L_3}$ & 0 (0.0\%) & 11 (1.1\%) & 41 (4.0\%) \\\bottomrule
+  \end{tabular}
+\end{table}
+\begin{table}
+\centering  \caption{Support Vector Machine for Classification}
+\label{tab:perf_mat_svc}  \begin{tabular}{rrrrr}    \hline\hline    \textbf{Class} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 score} \\\hline    L1 & 0.835922 & 0.866279 & 0.505085 & 0.638116 \\    L2 & 0.661165 & 0.609181 & 0.935238 & 0.737791 \\    L3 & 0.825243 & 0.788462 & 0.195238 & 0.312977 \\\hline\hline  \end{tabular}\end{table}
+
+\begin{table}[h]
+\centering
+  \caption{Confusion matrix for the LDA classifier}
+  \label{tab:conf_mat_lda}
+  \begin{tabular}{rrrrr}
+    \toprule
+    & &\multicolumn{3}{c}{True Values}\\
+    & & ${L_1}$ & ${L_2}$ & ${L_3}$ \\
+    \multirow{3}{*}{Predicted} & ${L_1}$ & 240 (23.3\%) & 143 (13.9\%) & 1 (0.1\%) \\
+    & ${L_2}$ & 49 (4.8\%) & 277 (26.9\%) & 56 (5.4\%) \\
+    & ${L_3}$ & 6 (0.6\%) & 105 (10.2\%) & 153 (14.9\%) \\\bottomrule
+  \end{tabular}
+\end{table}
+\begin{table}[h]
+\centering
+\label{tab:perf_met_lda}  \caption{Performance metrics for the LDA classifier}  \begin{tabular}{rrrrr}    \hline\hline    \textbf{Class} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 score} \\\hline    L1 & 0.806796 & 0.625 & 0.813559 & 0.706922 \\    L2 & 0.657282 & 0.725131 & 0.527619 & 0.610805 \\    L3 & 0.836893 & 0.579545 & 0.728571 & 0.64557 \\\hline\hline  \end{tabular}\end{table}
+
+From the ``more non-linear'' method, the SVM for classification, to the linear one, the LDA, for classification, it was observed a decrease in the performance. This is shown on the Tab. \ref{tab:conf_mat_svc} and Tab. \ref{tab:perf_mat_svc} for the SVC and in Tab. \ref{tab:conf_mat_lda} and Tab. \ref{tab:perf_met_lda} for LDA. In accuracy both the methods are similar, differing on the misclassification rates as the recall. An important remark is that the SVM for classification has space for improvement since the 5-fold cross validation was not performed in order to optimise the hyperparameters of the kernel function (in this case the squared exponential parameters) to better fit the data. This feature is the great advantage of this method giving him a greater flexibility. The LDA method by the way, is already the optimal in a Bayes' sense.
+
+\begin{table}
+\centering
+  \caption{Neural Network Regression}
+  \label{tab:nnr}
+  \begin{tabular}{rcr}
+    \hline\hline
+    \textbf{CV} & \textbf{RMSE}(MPa) & \textbf{$R^2$} \\\hline
+    1-th fold & 612.62 & 0.294586 \\
+    2-th fold & 612.04 & \textbf{0.355655} \\
+    3-th fold & \textbf{611.87} & 0.261329 \\
+    4-th fold & 612.92 & 0.243543 \\
+    5-th fold & 612.59 & 0.276319 \\\hline\hline
+  \end{tabular}
+\end{table}
+
+In Tab. \ref{tab:nnr} it's presented the results for the neural networks regression. Only about $35\%$ of the variance of the data was comprised by the model, which is unsatisfactory beyond its mean squared error of 611.87 MPa, on the best scenario. Given the poor concrete is about 25 MPa, the error is huge for the purpose of using the model in the case.
 
 \section{Conclusions}\label{sec:conclusions}
 
-% The database of concrete is not easy to analyse if there is no previous knowledge about the problem of the components mixture, as was noticed in the previous work and a more deep literature research was needed. Although the models worked, the authors were not capable to determine if the errors found imply in safe conditions for the concrete, neither is the objective of this work. What we can conclude is that the model is not linear given the $R^2$ statistics and the original work of the data~\cite{b4}.
-%In none of the analysis the data have been shown as separable on the initially determined classes. The next step is to try to perform regression to model the compressive strength itself before trying to classify the samples. in the literature \cite{b6} is more common an analysis of the concrete data stratified by the Age, what was not done in this work and maybe the cause of poor correlations.
+It was expected by these authors that the neural network regression could outperform the linear regression, what didn't occur. This is one of the challenges encountered in the modelling of this dataset. Despite of that, when the data is stratified in an attempt to classify, at least, if the concrete sample is good for basic applications as the classes $L_2$ and $L_3$ are, the models were capable of classify well. Highlighting the performance of the $k$-nearest neighbors, which achieve $99\%$ of $F_1$-score. Then it is possible to say that this non-linear method outperform the linear one, LDA.
 
 \begin{thebibliography}{00}
 \bibitem{b1} ACI Manual of Concrete Practice 2000, Part 1: Materials and General Properties of Concrete.  American Concrete Institute.  Farmington Hills, MI.

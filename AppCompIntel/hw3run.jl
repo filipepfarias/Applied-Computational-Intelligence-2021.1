@@ -105,92 +105,144 @@ if false
     savefig(f,"hw3/figures/most_corr_predictors.pdf");
 end
 
-# println("\nRunning Linear Discriminant Analysis Classification");
+println("\nRunning Linear Discriminant Analysis Classification");
 
-# # Import Linear Discriminant Analysis
-# LDAClassifier = @load LDA pkg=MultivariateStats verbosity=0
+# Import Linear Discriminant Analysis
+LDAClassifier = @load LDA pkg=MultivariateStats verbosity=0
 
-# model_lda = LDAClassifier();
+model_lda = LDAClassifier();
 
-# # Wraps model, predictor and outcome
-# model_lda_machine = machine(model_lda, X, y);
+# Wraps model, predictor and outcome
+model_lda_machine = machine(model_lda, X, y);
 
-# # Evaluate model performance for 5-folds
-# model_lda_summary_kfolds = evaluate!(
-#     model_lda_machine,
-#     resampling=CV(nfolds=5, rng=930),
-#     measure=ConfusionMatrix(perm=[1,2,3]),
-#     operation=predict_mode
-#     );
+results = DataFrame(["Class" => [], "Accuracy" => [], "Precision" => [], "Recall" => [], "F1 score" => []]);
 
-# results = model_lda_summary_kfolds.measurement[1];
-# if save_for_report
-#     table = pretty_table(String, results.mat; backend = Val(:latex), header = results.labels,
-#         title="Linear Discriminant Analysis Classification", nosubheader=true);
+fit!(model_lda_machine, verbosity=0)
+
+ŷ = MLJBase.predict(model_lda_machine);
+ŷ_label = mode.(ŷ);
+
+for class in ["L1","L2","L3"]
+    TP = MLJBase.multiclass_true_positive(mode.(ŷ),y)[class];
+    FP = MLJBase.multiclass_false_positive(mode.(ŷ),y)[class];
+    TN = MLJBase.multiclass_true_negative(mode.(ŷ),y)[class];
+    FN = MLJBase.multiclass_false_negative(mode.(ŷ),y)[class];
+    append!(
+        results,
+        DataFrame(["Class" => [class],
+                   "Accuracy" => [(TP+TN)/(TP+TN+FP+FN)], 
+                   "Precision" => [TP/(TP+FP)], 
+                   "Recall" => [TP/(TP+FN)], 
+                   "F1 score" => [2*TP/(2*TP+FP+FN)]])
+        );
+end
+
+if save_for_report
+    table = pretty_table(String, results.mat; backend = Val(:latex),
+        title="Linear Discriminant Analysis Classification", nosubheader=true);
     
-#     open("hw3/tables/results_lda.tex", "w") do io
-#         write(io, table)
-#     end; 
-# else
-#     pretty_table(results.mat,title="Linear Discriminant Analysis Classification", crop = :none, nosubheader=true, header = results.labels)
-# end
+    # open("hw3/tables/results_lda.tex", "w") do io
+    #     write(io, table)
+    # end; 
+else
+    pretty_table(results,title="Linear Discriminant Analysis Classification", crop = :none, nosubheader=true)
+    ConfusionMatrix(perm=[1,2,3])(mode.(ŷ),y)
+end
 
-# println("\nRunning Nearest Neighbors Classification");
+println("\nRunning Nearest Neighbors Classification");
 
 
-# # Import Linea Discriminant Analysis
-# KNNClassifier = @load KNNClassifier pkg=NearestNeighborModels verbosity=0
+# Import k-Nearest Neighbors
+KNNClassifier = @load KNNClassifier pkg=NearestNeighborModels verbosity=0
 
-# model_knnc = KNNClassifier();
+model_knnc = KNNClassifier();
 
-# # Wraps model, predictor and outcome
-# model_knnc_machine = machine(model_knnc, X, y);
+K_range = range(model_knnc, :K, lower=1, upper=21);
 
-# # Evaluate model performance for 5-folds
-# model_knnc_summary_kfolds = evaluate!(
-#     model_knnc_machine,
-#     resampling=CV(nfolds=5, rng=930),
-#     measure=ConfusionMatrix(perm=[1,2,3]),
-#     operation=predict_mode
-#     );
+# Evaluate model performance for 5-folds
+self_tuning_knn = TunedModel(model=model_knnc,
+                             resampling = CV(nfolds=5, rng=930),
+                             tuning = Grid(resolution=5),
+                             range = K_range,
+                             measure=MisclassificationRate(),
+                             operation=predict_mode);
 
-# results = model_knnc_summary_kfolds.measurement[1];
-# if save_for_report
-#     table = pretty_table(String, results.mat; backend = Val(:latex), header = results.labels,
-#         title="Nearest Neighbors Classification", nosubheader=true);
+# Wraps model, predictor and outcome
+model_knnc_machine = machine(self_tuning_knn, X, y);
+
+results = DataFrame(["Class" => [], "Accuracy" => [], "Precision" => [], "Recall" => [], "F1 score" => []]);
+
+fit!(model_knnc_machine, verbosity=0)
+
+ŷ = MLJBase.predict(model_knnc_machine);
+ŷ_label = mode.(ŷ)
+
+for class in ["L1","L2","L3"]
+    TP = MLJBase.multiclass_true_positive(mode.(ŷ),y)[class];
+    FP = MLJBase.multiclass_false_positive(mode.(ŷ),y)[class];
+    TN = MLJBase.multiclass_true_negative(mode.(ŷ),y)[class];
+    FN = MLJBase.multiclass_false_negative(mode.(ŷ),y)[class];
+    append!(
+        results,
+        DataFrame(["Class" => [class],
+                   "Accuracy" => [(TP+TN)/(TP+TN+FP+FN)], 
+                   "Precision" => [TP/(TP+FP)], 
+                   "Recall" => [TP/(TP+FN)], 
+                   "F1 score" => [2*TP/(2*TP+FP+FN)]])
+        );
+end
+
+if save_for_report
+    table = pretty_table(String, results.mat; backend = Val(:latex), header = results.labels,
+        title="Nearest Neighbors Classification", nosubheader=true);
     
-#     open("hw3/tables/results_knnc.tex", "w") do io
-#         write(io, table)
-#     end; 
-# else
-#     pretty_table(results.mat,title="Nearest Neighbors Classification", crop = :none, nosubheader=true, header = results.labels)
-# end
+    # open("hw3/tables/results_knnc.tex", "w") do io
+    #     write(io, table)
+    # end; 
+else
+    pretty_table(results,title="Nearest Neighbors Classification", crop = :none, nosubheader=true)
+    ConfusionMatrix(perm=[1,2,3])(mode.(ŷ),y)
+end
 
-# println("\nRunning Support Vector Classification");
+println("\nRunning Support Vector Classification");
 
-# # Import Linea Discriminant Analysis
-# SVCClassifier = @load SVC pkg=LIBSVM verbosity=0
+# Import Support Vector Classification
+SVCClassifier = @load SVC pkg=LIBSVM verbosity=0
 
-# model_svc = SVCClassifier();
+model_svc = SVCClassifier();
 
-# # Wraps model, predictor and outcome
-# model_svc_machine = machine(model_svc, X, y);
+# Wraps model, predictor and outcome
+model_svc_machine = machine(model_svc, X, y);
 
-# # Evaluate model performance for 5-folds
-# model_svc_summary_kfolds = evaluate!(
-#     model_svc_machine,
-#     resampling=CV(nfolds=5, rng=930),
-#     measure=ConfusionMatrix(perm=[1,2,3])
-#     );
+results = DataFrame(["Class" => [], "Accuracy" => [], "Precision" => [], "Recall" => [], "F1 score" => []]);
 
-# results = model_svc_summary_kfolds.measurement[1];
-# if save_for_report
-#     table = pretty_table(String, results.mat; backend = Val(:latex), header = results.labels,
-#         title="Support Vector Classification", nosubheader=true);
+fit!(model_svc_machine, verbosity=0);
+
+ŷ_label = MLJBase.predict(model_svc_machine);
+
+for class in ["L1","L2","L3"]
+    TP = MLJBase.multiclass_true_positive(ŷ,y)[class];
+    FP = MLJBase.multiclass_false_positive(ŷ,y)[class];
+    TN = MLJBase.multiclass_true_negative(ŷ,y)[class];
+    FN = MLJBase.multiclass_false_negative(ŷ,y)[class];
+    append!(
+        results,
+        DataFrame(["Class" => [class],
+                   "Accuracy" => [(TP+TN)/(TP+TN+FP+FN)], 
+                   "Precision" => [TP/(TP+FP)], 
+                   "Recall" => [TP/(TP+FN)], 
+                   "F1 score" => [2*TP/(2*TP+FP+FN)]])
+        );
+end
+
+if save_for_report
+    table = pretty_table(String, results.mat; backend = Val(:latex),
+        title="Support Vector Classification", nosubheader=true);
     
-#     open("hw3/tables/results_svc.tex", "w") do io
-#         write(io, table)
-#     end; 
-# else
-#     pretty_table(results.mat,title="Support Vector Classification", crop = :none, nosubheader=true, header = results.labels)
-# end
+    # open("hw3/tables/results_knnc.tex", "w") do io
+    #     write(io, table)
+    # end; 
+else
+    pretty_table(results,title="Support Vector Classification", crop = :none, nosubheader=true)
+    ConfusionMatrix(perm=[1,2,3])(ŷ,y)
+end
