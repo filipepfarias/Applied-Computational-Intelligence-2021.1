@@ -1,12 +1,8 @@
-\begin{table}
-\centering
-  \caption{Nearest Neighbors Classification}
-  \begin{tabular}{rrrrr}
-    \toprule
-    & &\multicolumn{3}{c}{True Values}\\
-    & & ${L_1}$ & ${L_2}$ & ${L_3}$ \\
-    \multirow{3}{*}{Predicted} & ${L_1}$ & 208 (20.2\%) & 85 (8.2\%) & 2 (0.2\%) \\
-    & ${L_2}$ & 84 (8.1\%) & 401 (38.9\%) & 89 (8.6\%) \\
-    & ${L_3}$ & 3 (0.3\%) & 39 (3.8\%) & 119 (11.5\%) \\\bottomrule
-  \end{tabular}
-\end{table}
+\begin{table}  
+    \centering
+    \caption{Performance metrics for the KNN classifier}
+    \label{tab:results_knncs}
+    \begin{tabular}{rrrrr}    
+        \hline\hline    
+        \textbf{Class} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 score} \\ \hline    L1 & 0.997087 & 1.0 & 0.989831 & 0.994889 \\\     L2 & 0.994175 & 0.99241 & 0.99619 & 0.994297 \\     L3 & 0.995146 & 0.985782 & 0.990476 & 0.988124 \\ \hline\hline  
+    \end{tabular}\end{table}
